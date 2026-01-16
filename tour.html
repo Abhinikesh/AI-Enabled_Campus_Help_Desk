@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>360° Virtual Tour - CampusSphere AI</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+</head>
+<body>
+  <!-- Animated Star Background -->
+  <div class="animated-bg"></div>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <i class="fas fa-graduation-cap"></i>
+        CampusSphere AI
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <!-- Nav links will be dynamically generated -->
+      </ul>
+      <div class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Tour Container -->
+  <div class="tour-container">
+    <div class="tour-sidebar">
+      <h2 style="margin-bottom: 1.5rem; color: var(--text-dark);">
+        <i class="fas fa-map-marked-alt"></i> Campus Locations
+      </h2>
+      <div class="location-info" id="locationInfo">
+        <h3>Welcome to Campus</h3>
+        <p>Click on a location to explore or use the hotspots in the 360° view.</p>
+      </div>
+      <ul class="hotspot-list" id="hotspotList">
+        <li class="hotspot-item" data-location="library">
+          <i class="fas fa-book"></i> Central Library
+        </li>
+        <li class="hotspot-item" data-location="cs-dept">
+          <i class="fas fa-laptop-code"></i> Computer Science Dept
+        </li>
+        <li class="hotspot-item" data-location="admin">
+          <i class="fas fa-building"></i> Administration Office
+        </li>
+        <li class="hotspot-item" data-location="hostel">
+          <i class="fas fa-home"></i> Student Hostels
+        </li>
+        <li class="hotspot-item" data-location="auditorium">
+          <i class="fas fa-theater-masks"></i> Main Auditorium
+        </li>
+      </ul>
+      
+      <!-- Location Detail Panel -->
+      <div class="location-detail-panel" id="locationDetailPanel">
+        <button class="panel-close" id="panelClose">
+          <i class="fas fa-times"></i>
+        </button>
+        <div class="panel-content">
+          <div class="panel-image" id="panelImage"></div>
+          <div class="panel-info">
+            <h3 id="panelTitle"></h3>
+            <p id="panelDescription"></p>
+            <div class="panel-facilities" id="panelFacilities"></div>
+            <div class="panel-timings" id="panelTimings"></div>
+            <div class="panel-actions">
+              <button class="btn btn-primary" id="getDirectionsBtn">
+                <i class="fas fa-route"></i> Get Directions
+              </button>
+              <button class="btn btn-secondary" id="askAIBtn">
+                <i class="fas fa-robot"></i> Ask AI
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Directions Panel -->
+      <div class="directions-panel" id="directionsPanel">
+        <div class="directions-header">
+          <h3><i class="fas fa-route"></i> Campus Directions</h3>
+          <button class="panel-close" id="directionsClose">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="directions-content">
+          <div class="directions-select">
+            <label>From:</label>
+            <select id="directionsFrom">
+              <option value="main-gate">Main Gate</option>
+              <option value="hostel">Hostel</option>
+              <option value="admin">Admin Office</option>
+              <option value="library">Library</option>
+            </select>
+            <label>To:</label>
+            <select id="directionsTo"></select>
+          </div>
+          <div class="directions-steps" id="directionsSteps"></div>
+        </div>
+      </div>
+    </div>
+    <div class="tour-content">
+      <a-scene id="tour-scene" vr-mode-ui="enabled: false" embedded>
+        <a-assets>
+          <!-- 360° Panorama Image (default - lighter, better performance) -->
+          <img id="campus-panorama" src="https://cdn.glitch.com/36cb8393-65c6-408d-a538-055ada20431b%2Fpanorama.jpg?v=1596381969137" crossorigin="anonymous">
+          <!-- Replace image with 360° video later if needed -->
+          <!-- <video id="campus-video" autoplay loop muted crossorigin="anonymous">
+            <source src="assets/videos/campus-360.mp4" type="video/mp4">
+          </video> -->
+        </a-assets>
+        
+        <!-- Using image by default (better performance) -->
+        <a-sky id="sky" src="#campus-panorama" rotation="0 -130 0"></a-sky>
+        <!-- For video: <a-sky id="sky" src="#campus-video" rotation="0 -130 0"></a-sky> -->
+        
+        <a-camera id="camera" look-controls="true" wasd-controls="false" position="0 1.6 0">
+          <a-cursor id="cursor" visible="true" geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03" 
+                    material="color: #4f46e5; shader: flat" 
+                    animation__click="property: scale; startEvents: click; from: 0.8 0.8 0.8; to: 1.2 1.2 1.2; dur: 150"
+                    animation__fusing="property: scale; startEvents: fusing; from: 1 1 1; to: 0.8 0.8 0.8; dur: 1500"
+                    raycaster="objects: .clickable"></a-cursor>
+        </a-camera>
+
+        <!-- Library Hotspot -->
+        <a-entity class="clickable" id="hotspot-library" geometry="primitive: ring; radiusInner: 0.5; radiusOuter: 0.6" 
+                  material="color: #4f46e5; shader: flat; opacity: 0.8" 
+                  position="0 1.6 -3" 
+                  look-at="0 1.6 0"
+                  animation__pulse="property: scale; to: 1.15 1.15 1.15; dur: 2000; easing: easeInOutQuad; loop: true; dir: alternate"
+                  data-location="library">
+          <a-text value="Library" align="center" position="0 0.8 0" color="#fff" scale="2 2 2"></a-text>
+        </a-entity>
+
+        <!-- CS Dept Hotspot -->
+        <a-entity class="clickable" id="hotspot-cs-dept" geometry="primitive: ring; radiusInner: 0.5; radiusOuter: 0.6" 
+                  material="color: #4f46e5; shader: flat; opacity: 0.8" 
+                  position="3 1.6 0" 
+                  look-at="0 1.6 0"
+                  animation__pulse="property: scale; to: 1.15 1.15 1.15; dur: 2000; easing: easeInOutQuad; loop: true; dir: alternate"
+                  data-location="cs-dept">
+          <a-text value="CS Dept" align="center" position="0 0.8 0" color="#fff" scale="2 2 2"></a-text>
+        </a-entity>
+
+        <!-- Admin Office Hotspot -->
+        <a-entity class="clickable" id="hotspot-admin" geometry="primitive: ring; radiusInner: 0.5; radiusOuter: 0.6" 
+                  material="color: #4f46e5; shader: flat; opacity: 0.8" 
+                  position="-3 1.6 0" 
+                  look-at="0 1.6 0"
+                  animation__pulse="property: scale; to: 1.15 1.15 1.15; dur: 2000; easing: easeInOutQuad; loop: true; dir: alternate"
+                  data-location="admin">
+          <a-text value="Admin" align="center" position="0 0.8 0" color="#fff" scale="2 2 2"></a-text>
+        </a-entity>
+
+        <!-- Hostel Hotspot -->
+        <a-entity class="clickable" id="hotspot-hostel" geometry="primitive: ring; radiusInner: 0.5; radiusOuter: 0.6" 
+                  material="color: #4f46e5; shader: flat; opacity: 0.8" 
+                  position="0 1.6 3" 
+                  look-at="0 1.6 0"
+                  animation__pulse="property: scale; to: 1.15 1.15 1.15; dur: 2000; easing: easeInOutQuad; loop: true; dir: alternate"
+                  data-location="hostel">
+          <a-text value="Hostel" align="center" position="0 0.8 0" color="#fff" scale="2 2 2"></a-text>
+        </a-entity>
+
+        <!-- Auditorium Hotspot -->
+        <a-entity class="clickable" id="hotspot-auditorium" geometry="primitive: ring; radiusInner: 0.5; radiusOuter: 0.6" 
+                  material="color: #4f46e5; shader: flat; opacity: 0.8" 
+                  position="-2 1.6 2" 
+                  look-at="0 1.6 0"
+                  animation__pulse="property: scale; to: 1.15 1.15 1.15; dur: 2000; easing: easeInOutQuad; loop: true; dir: alternate"
+                  data-location="auditorium">
+          <a-text value="Auditorium" align="center" position="0 0.8 0" color="#fff" scale="2 2 2"></a-text>
+        </a-entity>
+      </a-scene>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/tour.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exam Results - CampusSphere AI</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    // Strict access control - Students only
+    if (localStorage.getItem('userRole') !== 'student') {
+      alert('Access restricted. This page is only for Students.');
+      window.location.href = 'index.html';
+    }
+  </script>
+</head>
+<body>
+  <div class="animated-bg"></div>
+
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <i class="fas fa-graduation-cap"></i>
+        CampusSphere AI
+      </a>
+      <ul class="nav-links" id="navLinks"></ul>
+      <div class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-container">
+    <div class="page-header">
+      <h1><i class="fas fa-award"></i> Exam Results</h1>
+      <p>Your academic performance and grades</p>
+      <div class="results-disclaimer">
+        <i class="fas fa-info-circle"></i>
+        <span>Results shown are provisional.</span>
+      </div>
+    </div>
+    <div class="results-grid" id="resultsGrid"></div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/results.js"></script>
+</body>
+</html>

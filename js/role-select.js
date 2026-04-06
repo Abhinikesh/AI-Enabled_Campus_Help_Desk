@@ -1,8 +1,10 @@
 // Role Selection and Login
 
+let currentSelectedRole = '';
+
 document.addEventListener('DOMContentLoaded', function() {
   // Check if role already selected
-  const savedRole = localStorage.getItem('userRole');
+  const savedRole = sessionStorage.getItem('userRole');
   if (savedRole) {
     redirectToHome();
     return;
@@ -16,68 +18,128 @@ document.addEventListener('DOMContentLoaded', function() {
       handleRoleSelection(role);
     });
   });
+
+  const loginForm = document.getElementById('loginForm');
+  if (loginForm) {
+    loginForm.addEventListener('submit', handleLoginSubmit);
+  }
 });
 
 function handleRoleSelection(role) {
-  // Store role
-  localStorage.setItem('userRole', role);
+  currentSelectedRole = role;
+  const loginError = document.getElementById('loginError');
+  if(loginError) loginError.style.display = 'none';
 
-  // Check if login required
-  if (role === 'student' || role === 'faculty') {
-    showLoginModal(role);
-  } else {
-    // No login required for parent, new-admission, admin
-    redirectToHome();
-  }
+  // Always show modal for everyone to collect info (Name/Purpose or ID/Password)
+  showLoginModal(role);
 }
 
 function showLoginModal(role) {
   const modal = document.getElementById('loginModal');
   const loginTitle = document.getElementById('loginTitle');
   const idLabel = document.getElementById('idLabel');
-  const classLabel = document.getElementById('classLabel');
+  const secondaryLabel = document.getElementById('secondaryLabel');
   const userIdInput = document.getElementById('userId');
-  const loginForm = document.getElementById('loginForm');
-
+  const userSecondaryInput = document.getElementById('userSecondary');
+  
   if (!modal) return;
 
-  // Update labels based on role
+  // Reset fields
+  userIdInput.value = '';
+  userSecondaryInput.value = '';
+
   if (role === 'student') {
     loginTitle.textContent = 'Student Login';
-    idLabel.textContent = 'Roll Number';
-    userIdInput.placeholder = 'Enter your roll number';
-    classLabel.textContent = 'Class';
-  } else if (role === 'faculty') {
-    loginTitle.textContent = 'Faculty Login';
-    idLabel.textContent = 'Employee ID';
-    userIdInput.placeholder = 'Enter your employee ID';
-    classLabel.textContent = 'Department';
+    idLabel.textContent = 'Roll Number (8 Digits)';
+    userIdInput.placeholder = 'Enter your 8-digit roll number';
+    userIdInput.type = 'text';
+    secondaryLabel.textContent = 'Password';
+    userSecondaryInput.placeholder = 'Minimum 8 characters';
+    userSecondaryInput.type = 'password';
+  } else if (role === 'faculty' || role === 'admin') {
+    loginTitle.textContent = role === 'admin' ? 'Admin Login' : 'Faculty Login';
+    idLabel.textContent = role === 'admin' ? 'Admin Username' : 'Employee ID';
+    userIdInput.placeholder = 'Enter your ID';
+    userIdInput.type = 'text';
+    secondaryLabel.textContent = 'Password';
+    userSecondaryInput.placeholder = 'Minimum 8 characters';
+    userSecondaryInput.type = 'password';
+  } else {
+    // parent, new_admission
+    loginTitle.textContent = role === 'parent' ? 'Parent / Visitor Entry' : 'New Admission Entry';
+    idLabel.textContent = 'Full Name';
+    userIdInput.placeholder = 'Enter your full name';
+    userIdInput.type = 'text';
+    secondaryLabel.textContent = 'Purpose of Visit';
+    userSecondaryInput.placeholder = 'E.g., Campus Tour, Enquiry';
+    userSecondaryInput.type = 'text';
   }
 
   modal.classList.add('active');
+}
 
-  // Handle form submission
-  loginForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const userId = userIdInput.value.trim();
-    const userClass = document.getElementById('userClass').value.trim();
+function handleLoginSubmit(e) {
+  e.preventDefault();
+  
+  const userIdInput = document.getElementById('userId');
+  const userSecondaryInput = document.getElementById('userSecondary');
+  const loginError = document.getElementById('loginError');
+  
+  const userId = userIdInput.value.trim();
+  const userSecondary = userSecondaryInput.value.trim();
 
-    if (!userId || !userClass) {
-      alert('Please fill in all fields');
+  if (!userId || !userSecondary) {
+    showError('Please fill in all fields.');
+    return;
+  }
+
+  // Validate limits
+  if (currentSelectedRole === 'student') {
+    // Exactly 8 digits
+    const rollNumRegex = /^\d{8}$/;
+    if (!rollNumRegex.test(userId)) {
+      showError('Roll Number must be exactly 8 digits.');
       return;
     }
+    if (userSecondary.length < 8) {
+      showError('Password must be at least 8 characters long.');
+      return;
+    }
+  } else if (currentSelectedRole === 'faculty' || currentSelectedRole === 'admin') {
+    if (userSecondary.length < 8) {
+      showError('Password must be at least 8 characters long.');
+      return;
+    }
+  } else {
+    // Visitor/Parent: just basic exists check done above (Name, Purpose).
+  }
 
-    // Store login info
-    localStorage.setItem('userId', userId);
-    localStorage.setItem('userClass', userClass);
+  // Store login info in Session Storage
+  sessionStorage.setItem('userRole', currentSelectedRole);
+  sessionStorage.setItem('userId', userId);
+  
+  // Close modal and redirect
+  const modal = document.getElementById('loginModal');
+  if(modal) modal.classList.remove('active');
+  
+  redirectToHome();
+}
 
-    // Close modal and redirect
-    modal.classList.remove('active');
-    redirectToHome();
-  });
+function showError(msg) {
+  const loginError = document.getElementById('loginError');
+  if (loginError) {
+    loginError.textContent = msg;
+    loginError.style.display = 'block';
+  } else {
+    alert(msg);
+  }
 }
 
 function redirectToHome() {
-  window.location.href = 'index.html';
+  const role = sessionStorage.getItem('userRole');
+  if (role === 'admin') {
+    window.location.href = 'dashboard.html';
+  } else {
+    window.location.href = 'index.html';
+  }
 }

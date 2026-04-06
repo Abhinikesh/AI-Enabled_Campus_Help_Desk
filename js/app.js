@@ -2,7 +2,7 @@
 
 // Check role and redirect if needed
 function checkRoleAndRedirect() {
-  const userRole = localStorage.getItem('userRole');
+  const userRole = sessionStorage.getItem('userRole');
   if (!userRole) {
     window.location.href = 'role-select.html';
     return false;
@@ -12,7 +12,7 @@ function checkRoleAndRedirect() {
 
 // Get user role
 function getUserRole() {
-  return localStorage.getItem('userRole') || 'guest';
+  return sessionStorage.getItem('userRole') || 'guest';
 }
 
 // Check if user has access

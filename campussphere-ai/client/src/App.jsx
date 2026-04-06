@@ -1,121 +1,124 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState, useCallback } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import SplashScreen from './components/SplashScreen/SplashScreen';
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 
-function App() {
-  const [count, setCount] = useState(0)
+// ── Pages (lazy-load compatible in future) ─────────────────
+import Landing            from './pages/Landing/index';
+import StudentDashboard   from './pages/StudentDashboard/index';
+import FacultyDashboard   from './pages/FacultyDashboard/index';
+import AdminDashboard     from './pages/AdminDashboard/index';
+import ParentDashboard    from './pages/ParentDashboard/index';
+import AdmissionDashboard from './pages/AdmissionDashboard/index';
+import Attendance         from './pages/Attendance/index';
+import Exams              from './pages/Exams/index';
+import Results            from './pages/Results/index';
+import AIHelpDesk         from './pages/AIHelpDesk/index';
+import VirtualTour        from './pages/VirtualTour/index';
+import Complaints         from './pages/Complaints/index';
+import Drive              from './pages/Drive/index';
+
+const App = () => {
+  // Splash only shown once per session
+  const [splashDone, setSplashDone] = useState(false);
+  const handleSplashDone = useCallback(() => setSplashDone(true), []);
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <AuthProvider>
+      {/* Splash — only on first load */}
+      {!splashDone && <SplashScreen onDone={handleSplashDone} />}
 
-      <div className="ticks"></div>
+      {/* Main app — rendered underneath (hidden by splash until splashDone) */}
+      <div style={{ visibility: splashDone ? 'visible' : 'hidden' }}>
+        <Routes>
+          {/* ── Public ── */}
+          <Route path="/" element={<Landing />} />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+          {/* ── Student ── */}
+          <Route
+            path="/student/dashboard"
+            element={<ProtectedRoute role="student"><StudentDashboard /></ProtectedRoute>}
+          />
+          <Route
+            path="/student/attendance"
+            element={<ProtectedRoute role="student"><Attendance /></ProtectedRoute>}
+          />
+          <Route
+            path="/student/exams"
+            element={<ProtectedRoute role="student"><Exams /></ProtectedRoute>}
+          />
+          <Route
+            path="/student/results"
+            element={<ProtectedRoute role="student"><Results /></ProtectedRoute>}
+          />
+          <Route
+            path="/student/drive"
+            element={<ProtectedRoute role="student"><Drive /></ProtectedRoute>}
+          />
+          <Route
+            path="/student/complaints"
+            element={<ProtectedRoute role="student"><Complaints /></ProtectedRoute>}
+          />
+          <Route
+            path="/student/ai-help"
+            element={<ProtectedRoute role="student"><AIHelpDesk /></ProtectedRoute>}
+          />
+          <Route
+            path="/student/virtual-tour"
+            element={<ProtectedRoute role="student"><VirtualTour /></ProtectedRoute>}
+          />
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
-}
+          {/* ── Faculty ── */}
+          <Route
+            path="/faculty/dashboard"
+            element={<ProtectedRoute role="faculty"><FacultyDashboard /></ProtectedRoute>}
+          />
+          <Route
+            path="/faculty/ai-help"
+            element={<ProtectedRoute role="faculty"><AIHelpDesk /></ProtectedRoute>}
+          />
+          <Route
+            path="/faculty/virtual-tour"
+            element={<ProtectedRoute role="faculty"><VirtualTour /></ProtectedRoute>}
+          />
+          <Route
+            path="/faculty/complaints"
+            element={<ProtectedRoute role="faculty"><Complaints /></ProtectedRoute>}
+          />
 
-export default App
+          {/* ── Parent ── */}
+          <Route
+            path="/parent/dashboard"
+            element={<ProtectedRoute role="parent"><ParentDashboard /></ProtectedRoute>}
+          />
+          <Route
+            path="/parent/ai-help"
+            element={<ProtectedRoute role="parent"><AIHelpDesk /></ProtectedRoute>}
+          />
+          <Route
+            path="/parent/virtual-tour"
+            element={<ProtectedRoute role="parent"><VirtualTour /></ProtectedRoute>}
+          />
+
+          {/* ── Admission ── */}
+          <Route
+            path="/admission/dashboard"
+            element={<ProtectedRoute role="admission"><AdmissionDashboard /></ProtectedRoute>}
+          />
+
+          {/* ── Admin ── */}
+          <Route
+            path="/admin/dashboard"
+            element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>}
+          />
+
+          {/* ── Catch-all ── */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </div>
+    </AuthProvider>
+  );
+};
+
+export default App;

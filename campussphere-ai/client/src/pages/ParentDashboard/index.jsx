@@ -167,7 +167,7 @@ const ParentDashboard = () => {
               <div className="p-contact-info">
                 <h3 className="p-contact-dept">Academic Office</h3>
                 <p className="p-contact-detail">+91-9876-543-210</p>
-                <p className="p-contact-detail flex-email"><Mail size={14}/> academic@campus.edu</p>
+                <p className="p-contact-detail flex-email" onClick={() => navigator.clipboard.writeText('academic@campus.edu')} title="Click to copy"><Mail size={14}/> academic@campus.edu</p>
               </div>
             </div>
             <div className="p-contact-card">
@@ -175,7 +175,7 @@ const ParentDashboard = () => {
               <div className="p-contact-info">
                 <h3 className="p-contact-dept">Administration</h3>
                 <p className="p-contact-detail">+91-9876-543-211</p>
-                <p className="p-contact-detail flex-email"><Mail size={14}/> admin@campus.edu</p>
+                <p className="p-contact-detail flex-email" onClick={() => navigator.clipboard.writeText('admin@campus.edu')} title="Click to copy"><Mail size={14}/> admin@campus.edu</p>
               </div>
             </div>
             <div className="p-contact-card">
@@ -183,7 +183,7 @@ const ParentDashboard = () => {
               <div className="p-contact-info">
                 <h3 className="p-contact-dept">Student Affairs</h3>
                 <p className="p-contact-detail">+91-9876-543-212</p>
-                <p className="p-contact-detail flex-email"><Mail size={14}/> studentaffairs@campus.edu</p>
+                <p className="p-contact-detail flex-email" onClick={() => navigator.clipboard.writeText('studentaffairs@campus.edu')} title="Click to copy"><Mail size={14}/> studentaffairs@campus.edu</p>
               </div>
             </div>
             <div className="p-contact-card">
@@ -191,7 +191,7 @@ const ParentDashboard = () => {
               <div className="p-contact-info">
                 <h3 className="p-contact-dept">Fee Payment</h3>
                 <p className="p-contact-detail">+91-9876-543-213</p>
-                <p className="p-contact-detail flex-email"><Mail size={14}/> fees@campus.edu</p>
+                <p className="p-contact-detail flex-email" onClick={() => navigator.clipboard.writeText('fees@campus.edu')} title="Click to copy"><Mail size={14}/> fees@campus.edu</p>
               </div>
             </div>
           </div>

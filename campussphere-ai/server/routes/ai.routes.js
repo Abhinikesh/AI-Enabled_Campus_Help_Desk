@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { chat } = require('../controllers/ai.controller');
-const authMiddleware = require('../middleware/auth.middleware');
+const aiController = require('../controllers/ai.controller');
 
-// AI chat — any authenticated user can use it
-router.post('/chat', authMiddleware, chat);
+// Optionally require auth middleware
+// const { protect } = require('../middleware/authMiddleware');
+
+router.post('/chat', aiController.chat);
 
 module.exports = router;

@@ -22,6 +22,7 @@ const Navbar = () => {
       case 'faculty': return 'badge-faculty';
       case 'admin': return 'badge-admin';
       case 'parent': return 'badge-parent';
+      case 'admission': return 'badge-admission';
       default: return 'badge-student';
     }
   };
@@ -66,6 +67,13 @@ const Navbar = () => {
           { name: 'Virtual Tour', path: '/parent/virtual-tour' }
         ];
         break;
+      case 'admission':
+        links = [
+          { name: 'Home', path: '/admission/dashboard' },
+          { name: 'AI Help Desk', path: '/admission/ai-help' },
+          { name: 'Virtual Tour', path: '/admission/virtual-tour' }
+        ];
+        break;
       default:
         break;
     }
@@ -96,7 +104,7 @@ const Navbar = () => {
           <GraduationCap className="logo-icon" size={28} />
           <span className="logo-text">CampusSphere AI</span>
           <span className={`role-badge ${getRoleBadgeColor(role)}`}>
-            {role.toUpperCase()}
+            {role === 'admission' ? 'NEW ADMISSION' : role.toUpperCase()}
           </span>
         </div>
 

@@ -218,6 +218,16 @@ const AdminDashboard = () => {
                   <span className="del-icon">🗑️</span>
                 </div>
               </div>
+              <div className="a-hist-item">
+                <div className="a-hist-left">
+                  <span className="fw-bold fs-14">Fee Structure Change</span>
+                  <span className="a-hist-sub">To: Parents • Apr 1</span>
+                </div>
+                <div className="a-hist-actions">
+                  <span className="edit-icon">✏️</span>
+                  <span className="del-icon">🗑️</span>
+                </div>
+              </div>
             </div>
           </div>
         </section>

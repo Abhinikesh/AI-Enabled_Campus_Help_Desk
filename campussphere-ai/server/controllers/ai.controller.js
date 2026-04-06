@@ -1,54 +1,66 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'dummy_key');
 
-// POST /api/ai/chat
-const chat = async (req, res) => {
-  try {
-    const { message, history = [] } = req.body;
+function detectAgent(message) {
+  const msg = message.toLowerCase();
+  const academic = ['timetable','result','marks','attendance','exam','subject','course','syllabus','grade','cgpa','semester','lecture'];
+  const admin = ['fee','id card','certificate','document','hostel','bus','library','payment','receipt','admission','card'];
+  const navigation = ['where','location','room','building','department','lab','office','canteen','direction','find','map','how to reach'];
+  const complaint = ['complaint','issue','problem','broken','not working','report','raise','grievance','request','fix'];
+  
+  if (complaint.some(k => msg.includes(k))) return 'complaint';
+  if (navigation.some(k => msg.includes(k))) return 'navigation';
+  if (admin.some(k => msg.includes(k))) return 'admin';
+  if (academic.some(k => msg.includes(k))) return 'academic';
+  return 'academic'; // default
+}
 
-    if (!message || !message.trim()) {
-      return res.status(400).json({ success: false, message: 'Message is required' });
-    }
-
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-
-    // System context for campus helpdesk
-    const systemPrompt = `You are CampusSphere AI, an intelligent campus helpdesk assistant for a college. 
-You help students, faculty, parents, and new admissions with:
-- Academic queries (attendance, results, exams, timetables)
-- Administrative processes (fee payment, admissions, documents)
-- Campus facilities and services
-- General college information
-
-Current user role: ${req.user?.role || 'guest'}
-Current user name: ${req.user?.name || 'User'}
-
-Always be helpful, concise, and professional. If you don't know something specific about the institution, say so honestly.`;
-
-    // Build chat messages
-    const chatHistory = history.map((h) => ({
-      role: h.role,
-      parts: [{ text: h.text }],
-    }));
-
-    const chat = model.startChat({
-      history: [
-        { role: 'user', parts: [{ text: systemPrompt }] },
-        { role: 'model', parts: [{ text: 'Understood. I am CampusSphere AI, ready to assist campus members.' }] },
-        ...chatHistory,
-      ],
-    });
-
-    const result = await chat.sendMessage(message);
-    const reply = result.response.text();
-
-    console.log(`✅ AI chat response generated for userId: ${req.user?.userId}`);
-    res.status(200).json({ success: true, reply });
-  } catch (err) {
-    console.error('❌ AI chat error:', err.message);
-    res.status(500).json({ success: false, message: 'AI service error. Please try again.' });
+const getSystemPrompt = (agent, role, name) => {
+  const base = `Current user role: ${role}. User name: ${name}.`;
+  
+  switch(agent) {
+    case 'academic':
+      return `You are the Academic Agent of CampusSphere AI, a smart campus helpdesk. You help students and faculty with academic queries including timetables, results, attendance, exams, syllabus, CGPA, and course information. Always respond in a friendly, helpful, structured way. Use bullet points for lists. Keep responses concise and relevant to campus academics. ${base}`;
+    case 'admin':
+      return `You are the Admin Agent of CampusSphere AI. You assist with administrative queries including fee payment, ID cards, certificates, documents, hostel, library, bus pass, and general administration. Always respond helpfully and direct users to the right office when needed. ${base}`;
+    case 'navigation':
+      return `You are the Navigation Agent of CampusSphere AI. You help users find locations on campus including rooms, labs, departments, offices, canteen, library, hostels, and other facilities. Provide clear step-by-step directions. Campus layout: Main Gate -> Admin Block (left) -> Academic Block A (straight) -> Academic Block B (right) -> Library (far right) -> Labs (behind Academic A) -> Canteen (center) -> Hostels (back campus). ${base}`;
+    case 'complaint':
+      return `You are the Complaint Agent of CampusSphere AI. You help users raise, track and resolve complaints. Guide users through the complaint process, collect complaint details, and provide expected resolution timelines. Categories: Academic, Administrative, Hostel, Infrastructure, Other. Always be empathetic and professional. ${base}`;
+    default:
+      return `You are CampusSphere AI. Help the user. ${base}`;
   }
 };
 
-module.exports = { chat };
+exports.chat = async (req, res) => {
+  try {
+    const { message, history = [], agent } = req.body;
+    // mock user from req.user if auth middleware exists
+    const user = req.user || { role: 'student', name: 'User' };
+    
+    // Auto detect if not provided
+    const detectedAgent = agent || detectAgent(message);
+    const systemPrompt = getSystemPrompt(detectedAgent, user.role, user.name);
+    
+    // Format history for Gemini
+    const geminiHistory = history.map(msg => ({
+      role: msg.role === 'user' ? 'user' : 'model',
+      parts: [{ text: msg.content }]
+    }));
+
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-1.5-flash',
+      systemInstruction: systemPrompt
+    });
+
+    const chatSession = model.startChat({ history: geminiHistory });
+    const result = await chatSession.sendMessage(message);
+    const responseText = result.response.text();
+
+    res.json({ reply: responseText, agent: detectedAgent });
+  } catch (error) {
+    console.error("AI Chat Error:", error);
+    res.status(500).json({ error: "Failed to process chat message." });
+  }
+};

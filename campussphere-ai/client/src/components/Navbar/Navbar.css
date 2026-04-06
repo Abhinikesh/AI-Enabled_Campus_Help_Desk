@@ -54,6 +54,7 @@
 .badge-faculty { background-color: #7c3aed; }
 .badge-admin   { background-color: #dc2626; }
 .badge-parent  { background-color: #15803d; }
+.badge-admission { background-color: #0d9488; }
 
 .navbar-links.desktop {
   display: flex;

@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+
 /* ============================================
-   CampusSphere AI - Global Styles (Dark Theme)
+   CampusSphere AI - Global Styles (Dark Navy Theme)
    ============================================ */
 
 /* Reset & Base Styles */
@@ -11,31 +13,31 @@
 
 :root {
   /* Dark Theme Colors */
-  --primary-color: #6366f1;
-  --primary-dark: #4f46e5;
-  --primary-light: #818cf8;
-  --secondary-color: #8b5cf6;
-  --accent-color: #a78bfa;
+  --primary-color: #3b82f6;      /* Blue accent */
+  --primary-dark: #2563eb;       /* Darker Blue */
+  --primary-light: #60a5fa;      /* Light Blue */
+  --secondary-color: #f59e0b;    /* Gold accent */
+  --accent-color: #fbbf24;       /* Light Gold */
   
-  /* Dark Backgrounds */
-  --bg-primary: #0f172a;      /* Deep navy */
-  --bg-secondary: #1e293b;   /* Charcoal */
-  --bg-tertiary: #334155;    /* Dark gray */
-  --bg-card: #1e293b;        /* Card background */
-  --bg-hover: #334155;       /* Hover state */
+  /* Dark Navy Backgrounds */
+  --bg-primary: #0a192f;         /* Deep Navy */
+  --bg-secondary: #112240;       /* Navy Card bg */
+  --bg-tertiary: #1a365d;        /* Navy Alternate bg */
+  --bg-card: #112240;            /* Card background */
+  --bg-hover: #233554;           /* Hover state */
   
   /* Text Colors */
-  --text-primary: #f1f5f9;   /* White/light gray */
-  --text-secondary: #cbd5e1; /* Light gray */
-  --text-muted: #94a3b8;     /* Muted gray */
+  --text-primary: #f8fafc;       /* White */
+  --text-secondary: #cbd5e1;     /* Light gray */
+  --text-muted: #8892b0;         /* Muted blue/gray */
   
   /* Borders & Shadows */
-  --border-color: #334155;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+  --border-color: #233554;
+  --shadow-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 8px -1px rgba(2, 12, 27, 0.7);
+  --shadow-lg: 0 10px 20px -3px rgba(2, 12, 27, 0.8);
+  --shadow-xl: 0 20px 30px -5px rgba(2, 12, 27, 0.9);
+  --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.3);
   
   /* Border Radius */
   --radius-sm: 0.375rem;
@@ -45,13 +47,18 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
   color: var(--text-primary);
   background-color: var(--bg-primary);
   overflow-x: hidden;
   position: relative;
 }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+}
+
 
 /* Animated Star Background */
 .animated-bg {
@@ -253,32 +260,37 @@ body {
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-primary {
-  background: white;
-  color: var(--primary-color);
+  background: var(--primary-color);
+  color: white;
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-xl);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  background: var(--primary-dark);
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
   color: white;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 /* Features Section */
@@ -301,22 +313,26 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2rem;
+  align-items: stretch;
 }
 
 .feature-card {
   background: var(--bg-card);
-  padding: 2rem;
+  padding: 2.5rem 2rem;
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
   border: 1px solid var(--border-color);
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-xl);
-  border-color: var(--primary-color);
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl), var(--shadow-glow);
+  border-color: var(--primary-light);
 }
 
 .feature-icon {
@@ -1068,10 +1084,20 @@ body {
 
 .stat-card {
   background: var(--bg-card);
-  padding: 1.5rem;
+  padding: 2rem;
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
   border: 1px solid var(--border-color);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.stat-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl), var(--shadow-glow);
+  border-color: var(--primary-light);
 }
 
 .stat-card h3 {
@@ -1104,10 +1130,19 @@ body {
 
 .chart-card {
   background: var(--bg-card);
-  padding: 2rem;
+  padding: 2.5rem 2rem;
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-md);
   border: 1px solid var(--border-color);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl), var(--shadow-glow);
+  border-color: var(--primary-light);
 }
 
 .chart-card h3 {
@@ -1227,21 +1262,28 @@ td {
   overflow: hidden;
   box-shadow: var(--shadow-md);
   border: 1px solid var(--border-color);
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
 }
 
 .program-card:hover {
   transform: translateY(-8px);
-  box-shadow: var(--shadow-xl);
-  border-color: var(--primary-color);
+  box-shadow: var(--shadow-xl), var(--shadow-glow);
+  border-color: var(--primary-light);
 }
 
 .program-card img {
   width: 100%;
   height: 200px;
   object-fit: cover;
+  transition: transform 0.5s ease;
   display: block;
+}
+
+.program-card:hover img {
+  transform: scale(1.05);
 }
 
 .program-card h3 {
@@ -1376,12 +1418,13 @@ td {
   box-shadow: var(--shadow-md);
   height: 300px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
 }
 
 .news-card:hover {
-  transform: scale(1.02);
-  box-shadow: var(--shadow-xl);
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl), var(--shadow-glow);
 }
 
 .news-card img {
@@ -1389,6 +1432,11 @@ td {
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 0.5s ease;
+}
+
+.news-card:hover img {
+  transform: scale(1.05);
 }
 
 .news-card-overlay {
@@ -2184,18 +2232,22 @@ td {
 
 .role-card {
   background: var(--bg-card);
-  border: 2px solid var(--border-color);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
-  padding: 2rem 1.5rem;
+  padding: 2.5rem 1.5rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .role-card:hover {
   transform: translateY(-8px);
-  border-color: var(--primary-color);
-  box-shadow: var(--shadow-xl);
+  border-color: var(--primary-light);
+  box-shadow: var(--shadow-xl), var(--shadow-glow);
 }
 
 .role-icon {
@@ -2274,17 +2326,20 @@ td {
 
 .class-card {
   background: var(--bg-card);
-  padding: 1.5rem;
+  padding: 2.5rem 2rem;
   border-radius: var(--radius-xl);
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-md);
   position: relative;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
 }
 
 .class-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl), var(--shadow-glow);
+  border-color: var(--primary-light);
 }
 
 .class-card.ongoing {
@@ -2653,16 +2708,19 @@ td {
 
 .attendance-card {
   background: var(--bg-card);
-  padding: 2rem;
+  padding: 2.5rem 2rem;
   border-radius: var(--radius-xl);
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-md);
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
 }
 
 .attendance-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-xl);
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl), var(--shadow-glow);
+  border-color: var(--primary-light);
 }
 
 .attendance-card-header {
@@ -2764,10 +2822,19 @@ td {
 
 .parent-card {
   background: var(--bg-card);
-  padding: 2rem;
+  padding: 2.5rem 2rem;
   border-radius: var(--radius-xl);
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-md);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.parent-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl), var(--shadow-glow);
+  border-color: var(--primary-light);
 }
 
 .parent-card h3 {

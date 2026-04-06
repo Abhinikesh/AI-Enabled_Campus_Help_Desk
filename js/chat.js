@@ -98,8 +98,8 @@ function sendMessage() {
   // Simulate AI response delay
   setTimeout(() => {
     hideTypingIndicator();
-    const response = getAIResponse(message, currentAgent);
-    addAIMessage(response);
+    const routerResult = getAIResponse(message);
+    addAIMessage(routerResult.response, routerResult.agent);
   }, 1000 + Math.random() * 1000); // Random delay between 1-2 seconds
 }
 
@@ -119,13 +119,23 @@ function addUserMessage(message) {
 }
 
 // Add AI message to chat
-function addAIMessage(message) {
+function addAIMessage(message, agentName = 'AI Agent') {
   const chatMessages = document.getElementById('chatMessages');
   const messageDiv = document.createElement('div');
   messageDiv.className = 'message ai';
+  
+  // Format the agent name based on the ID
+  let displayAgent = agentName;
+  if(agentName === 'academic') displayAgent = 'Academic Agent';
+  if(agentName === 'admin') displayAgent = 'Admin Agent';
+  if(agentName === 'navigation') displayAgent = 'Navigation Agent';
+  if(agentName === 'complaint') displayAgent = 'Complaint Agent';
+  if(agentName === 'Router Assistant') displayAgent = 'Campus AI Router';
+
   messageDiv.innerHTML = `
     <div>
-      <div class="message-bubble">${escapeHtml(message)}</div>
+      <div style="font-size: 0.75rem; color: var(--primary-color); margin-bottom: 0.25rem; font-weight: 600;">${displayAgent}</div>
+      <div class="message-bubble">${message}</div>
       <div class="message-time">${formatTime()}</div>
     </div>
   `;
@@ -164,20 +174,69 @@ function hideTypingIndicator() {
   }
 }
 
-// Get AI response based on message and agent
-function getAIResponse(message, agent) {
+// Get AI response based on message intent routing
+function getAIResponse(message) {
   const lowerMessage = message.toLowerCase();
-  const agentResponses = campusData.aiResponses[agent];
+  
+  // 1. Detect Intent Agent
+  let detectedAgent = null;
+  
+  const keywords = {
+    academic: ['timetable', 'results', 'attendance', 'courses', 'exam', 'class', 'grade'],
+    admin: ['fees', 'id card', 'documents', 'certificate', 'hostel', 'payment'],
+    navigation: ['room', 'find', 'where', 'direction', 'campus', 'department', 'locate'],
+    complaint: ['raise', 'track', 'resolve', 'complaint', 'broken', 'issue', 'wifi', 'water', 'electricity']
+  };
 
-  // Check for specific keywords
-  for (const [key, response] of Object.entries(agentResponses)) {
-    if (key !== 'default' && lowerMessage.includes(key)) {
-      return response;
+  for (const [agent, words] of Object.entries(keywords)) {
+    if (words.some(word => lowerMessage.includes(word))) {
+      detectedAgent = agent;
+      break;
     }
   }
 
-  // Return default response
-  return agentResponses.default || "I'm here to help! Could you please provide more details?";
+  // Handle unclear intent
+  if (!detectedAgent) {
+    return {
+      agent: 'Router Assistant',
+      response: "I'm not quite sure which department you need. Could you please clarify if your query is regarding Academics, Admin services, Campus Navigation, or raising a Complaint?"
+    };
+  }
+
+  // 2. Know User Role
+  // In a real app, logic would deeply check the session/user role. We grab it from our helper function.
+  let role = 'guest';
+  if (typeof getUserRole === 'function') {
+    role = getUserRole();
+  } else if (sessionStorage.getItem('userRole')) {
+    role = sessionStorage.getItem('userRole');
+  }
+
+  let greeting = '';
+  if (role === 'student') greeting = 'Hi there, student! ';
+  else if (role === 'faculty') greeting = 'Hello, professor. ';
+  else if (role === 'admin') greeting = 'Hello, admin. ';
+  else greeting = 'Hello there! ';
+
+  // 3. Find matched answer
+  const agentResponses = campusData.aiResponses[detectedAgent];
+  let answer = '';
+  for (const [key, response] of Object.entries(agentResponses)) {
+    if (key !== 'default' && lowerMessage.includes(key)) {
+      answer = response;
+      break;
+    }
+  }
+
+  if (!answer) answer = agentResponses.default || "I am processing your specific request, please wait or check the portal.";
+
+  // 4. Structured Output
+  let actionSuggestion = "Is there anything else you need help with regarding " + detectedAgent + " matters?";
+  
+  return {
+    agent: detectedAgent,
+    response: `${greeting}${answer} <br><br><i>${actionSuggestion}</i>`
+  };
 }
 
 // Scroll chat to bottom

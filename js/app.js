@@ -144,17 +144,39 @@ function setupNavigation() {
     ];
   }
 
+  // Add Logout to all roles
+  links.push({ href: '#', text: 'Logout', id: 'logoutBtn' });
+
   navLinks.innerHTML = links.map(link => 
-    `<li><a href="${link.href}">${link.text}</a></li>`
+    `<li><a href="${link.href}" ${link.id ? `id="${link.id}"` : ''}>${link.text}</a></li>`
   ).join('');
 
-  // Add role badge
+  // Handle logout functionality
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      sessionStorage.clear();
+      window.location.href = 'role-select.html';
+    });
+  }
+
+  // Add role badge and fix logo link
   const logo = document.querySelector('.logo');
-  if (logo && !logo.querySelector('.role-badge')) {
-    const roleBadge = document.createElement('span');
-    roleBadge.className = 'role-badge';
-    roleBadge.textContent = userRole.charAt(0).toUpperCase() + userRole.slice(1).replace('-', ' ');
-    logo.appendChild(roleBadge);
+  if (logo) {
+    // Correct link based on role
+    if (userRole === 'admin') {
+      logo.href = 'dashboard.html';
+    } else {
+      logo.href = 'index.html';
+    }
+
+    if (!logo.querySelector('.role-badge')) {
+      const roleBadge = document.createElement('span');
+      roleBadge.className = 'role-badge';
+      roleBadge.textContent = userRole.charAt(0).toUpperCase() + userRole.slice(1).replace('-', ' ');
+      logo.appendChild(roleBadge);
+    }
   }
 }
 

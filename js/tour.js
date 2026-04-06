@@ -139,6 +139,14 @@ function openLocationDetail(locationId) {
   // Show panel
   panel.classList.add('active');
   
+  // Update 360 Sky Background to location's dummy ambient color
+  const sky = document.getElementById('sky');
+  if (sky && location.ambientColor) {
+    // Remove the default panorama image to allow color to show
+    sky.removeAttribute('src');
+    sky.setAttribute('color', location.ambientColor);
+  }
+  
   // Update sidebar
   updateSidebarLocation(locationId);
 }

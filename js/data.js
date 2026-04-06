@@ -158,6 +158,7 @@ const campusData = {
       description: "State-of-the-art library with 50,000+ books and digital resources",
       position: "0 1.6 -3",
       image: "assets/images/location-library.jpg",
+      ambientColor: "#059669", // Emerald Green
       facilities: ["Reading halls", "Digital resources", "Study rooms", "Computer lab", "Quiet zones"],
       timings: "Monday-Friday: 8 AM - 10 PM, Weekends: 9 AM - 6 PM",
       aiDescription: "The Central Library is our main knowledge hub with over 50,000 books, digital databases, and quiet study spaces. It features modern reading halls, computer labs, and dedicated study rooms for group work."
@@ -168,6 +169,7 @@ const campusData = {
       description: "Modern labs with latest technology and expert faculty",
       position: "3 1.6 0",
       image: "assets/images/location-cs.jpg",
+      ambientColor: "#2563eb", // Blue
       facilities: ["Computer labs", "AI research lab", "Project rooms", "Faculty offices", "Seminar hall"],
       timings: "Monday-Friday: 9 AM - 6 PM",
       aiDescription: "The Computer Science Department houses advanced computer labs, an AI research facility, and modern project rooms. It's home to expert faculty and cutting-edge technology for research and learning."
@@ -178,6 +180,7 @@ const campusData = {
       description: "Central hub for all administrative services",
       position: "-3 1.6 0",
       image: "assets/images/location-admin.jpg",
+      ambientColor: "#d97706", // Amber
       facilities: ["Student services", "Fee payment", "ID card office", "Certificate services", "Help desk"],
       timings: "Monday-Friday: 9 AM - 5 PM",
       aiDescription: "The Administration Office is your one-stop for all administrative needs including fee payments, ID cards, certificates, and student services. Friendly staff are available to assist you."
@@ -188,6 +191,7 @@ const campusData = {
       description: "Comfortable accommodation with all modern amenities",
       position: "0 1.6 3",
       image: "assets/images/location-hostel.jpg",
+      ambientColor: "#be185d", // Pink/Rose
       facilities: ["AC rooms", "WiFi", "Mess facility", "Common rooms", "Laundry"],
       timings: "24/7 access for residents",
       aiDescription: "Our student hostels provide comfortable accommodation with modern amenities including AC rooms, high-speed WiFi, mess facilities, common rooms for recreation, and laundry services."
@@ -198,6 +202,7 @@ const campusData = {
       description: "Large event space for conferences and cultural events",
       position: "-2 1.6 2",
       image: "assets/images/location-auditorium.jpg",
+      ambientColor: "#7c3aed", // Violet
       facilities: ["Seating for 500+", "Stage", "Sound system", "Projection", "Green room"],
       timings: "Available for booking",
       aiDescription: "The Main Auditorium is a spacious venue with seating for 500+ people, perfect for conferences, cultural events, guest lectures, and ceremonies. It features modern sound and projection systems."

@@ -21,16 +21,16 @@ function initializeDashboard() {
 function loadStats() {
   const analytics = campusData.analytics;
 
-  // Total queries
-  const totalQueriesEl = document.getElementById('totalQueries');
-  if (totalQueriesEl) {
-    animateValue(totalQueriesEl, 0, analytics.totalQueries, 1000);
+  // Total Students
+  const totalStudentsEl = document.getElementById('totalStudents');
+  if (totalStudentsEl) {
+    animateValue(totalStudentsEl, 0, 4500, 1000); // Dummy data
   }
 
-  // Most used agent
-  const mostUsedAgentEl = document.getElementById('mostUsedAgent');
-  if (mostUsedAgentEl) {
-    mostUsedAgentEl.textContent = analytics.mostUsedAgent;
+  // Total Teachers
+  const totalTeachersEl = document.getElementById('totalTeachers');
+  if (totalTeachersEl) {
+    animateValue(totalTeachersEl, 0, 350, 1000); // Dummy data
   }
 
   // Active complaints
@@ -40,13 +40,10 @@ function loadStats() {
     animateValue(activeComplaintsEl, 0, activeCount, 1000);
   }
 
-  // Resolution rate
-  const resolutionRateEl = document.getElementById('resolutionRate');
-  if (resolutionRateEl) {
-    const total = campusData.complaints.length;
-    const resolved = campusData.complaints.filter(c => c.status === 'Resolved').length;
-    const rate = total > 0 ? Math.round((resolved / total) * 100) : 0;
-    animateValue(resolutionRateEl, 0, rate, 1000, '%');
+  // Total complaints
+  const totalComplaintsEl = document.getElementById('totalComplaints');
+  if (totalComplaintsEl) {
+    animateValue(totalComplaintsEl, 0, campusData.complaints.length, 1000);
   }
 }
 
@@ -163,21 +160,90 @@ function loadComplaintsTable() {
   const tableBody = document.getElementById('complaintsTableBody');
   if (!tableBody) return;
 
-  const recentComplaints = campusData.analytics.recentComplaints;
   tableBody.innerHTML = '';
 
-  recentComplaints.forEach(complaint => {
+  campusData.complaints.forEach((complaint, index) => {
     const row = document.createElement('tr');
+    
+    // Add dummy student names if not present
+    const names = ['Rahul Sharma', 'Priya Patel', 'Amit Kumar', 'Sneha Gupta', 'Rohan Singh'];
+    const studentName = complaint.studentName || names[index % names.length];
+    
+    const statusClasses = {
+      'Open': 'status-open',
+      'In Progress': 'status-in-progress',
+      'Resolved': 'status-resolved',
+      'Pending': 'status-pending'
+    };
+    
+    // Convert to target state mapping
+    const isResolved = complaint.status === 'Resolved';
+    const statusClass = isResolved ? 'status-resolved' : 'status-pending';
+    const displayStatus = isResolved ? 'Resolved' : 'Pending';
+
     row.innerHTML = `
       <td><strong>${complaint.id}</strong></td>
+      <td>${studentName}</td>
       <td>${complaint.category}</td>
-      <td><span class="status-badge status-${complaint.status.toLowerCase().replace(' ', '-')}">${complaint.status}</span></td>
-      <td>${complaint.date}</td>
-      <td><span class="priority-${complaint.priority.toLowerCase()}">${complaint.priority}</span></td>
+      <td><span class="status-badge ${statusClass}" id="badge-${index}">${displayStatus}</span></td>
+      <td>
+        <button class="btn btn-secondary" onclick="toggleComplaintStatus(${index}, this)" style="padding: 0.25rem 0.75rem; font-size: 0.75rem;">
+          ${isResolved ? 'Re-open' : 'Resolve'}
+        </button>
+      </td>
     `;
     tableBody.appendChild(row);
   });
+  
+  loadActivityFeed();
 }
+
+// Global action handler
+window.toggleComplaintStatus = function(index, btn) {
+  const complaint = campusData.complaints[index];
+  const isResolved = complaint.status === 'Resolved';
+  
+  // Toggle
+  complaint.status = isResolved ? 'Pending' : 'Resolved';
+  
+  // Update badge immediately
+  const badgeId = `badge-${index}`;
+  const badge = document.getElementById(badgeId);
+  if (badge) {
+    badge.textContent = complaint.status;
+    badge.className = `status-badge ${complaint.status === 'Resolved' ? 'status-resolved' : 'status-pending'}`;
+  }
+  
+  // Update button text
+  btn.textContent = complaint.status === 'Resolved' ? 'Re-open' : 'Resolve';
+  
+  // Refresh stats
+  loadStats();
+};
+
+function loadActivityFeed() {
+  const feed = document.getElementById('activityFeedList');
+  if (!feed) return;
+  
+  const activities = [
+    { text: "Admin User resolved complaint TKT-004", time: "10 mins ago" },
+    { text: "New admission query registered by guest", time: "1 hour ago" },
+    { text: "Student Amit Kumar uploaded document to Drive", time: "2 hours ago" },
+    { text: "Faculty member processed attendance for CS-101", time: "4 hours ago" },
+    { text: "Daily backup completed successfully", time: "5 hours ago" }
+  ];
+  
+  feed.innerHTML = activities.map(act => `
+    <div style="padding: 1rem; background: rgba(255,255,255,0.05); border-radius: var(--radius-lg); border-left: 3px solid var(--primary-color);">
+      <p style="color: var(--text-primary); margin-bottom: 0.25rem;">${act.text}</p>
+      <small style="color: var(--text-muted);">${act.time}</small>
+    </div>
+  `).join('');
+}
+
+window.exportData = function() {
+  alert("Initiating report export. The CSV will download shortly.");
+};
 
 // Animate number value
 function animateValue(element, start, end, duration, suffix = '') {

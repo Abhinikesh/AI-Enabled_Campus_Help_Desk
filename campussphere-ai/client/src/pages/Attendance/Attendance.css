@@ -1,0 +1,201 @@
+.attendance-layout {
+  min-height: 100vh;
+  background-color: #0f172a;
+  padding-top: 64px;
+}
+
+.attendance-content {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+}
+
+.semester-badge {
+  background-color: #1e293b;
+  color: #3b82f6;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.warning-banner {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid #ef4444;
+  color: #ef4444;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 16px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.overall-attendance-card {
+  background: linear-gradient(135deg, #1e3a5f 0%, #1e293b 100%);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 16px;
+  padding: 32px;
+  text-align: center;
+}
+
+.overall-stat {
+  font-family: 'Poppins', sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+  color: #22c55e;
+  margin: 0;
+}
+
+.attendance-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .attendance-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .attendance-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.attendance-card {
+  background-color: #1e293b;
+  border-radius: 16px;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease;
+}
+
+.attendance-card:hover {
+  transform: translateY(-2px);
+}
+
+.warning-card {
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  background-color: rgba(239, 68, 68, 0.02);
+}
+
+.att-card-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.att-subject-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 8px 0;
+}
+
+.att-subject-code {
+  display: inline-block;
+  background-color: #0f172a;
+  border: 1px solid #334155;
+  color: #94a3b8;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+}
+
+.progress-ring-container-large {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.progress-ring-large {
+  width: 140px;
+  height: 140px;
+  transform: rotate(-90deg);
+}
+
+.ring-text-large {
+  fill: white;
+  font-family: 'Poppins', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  transform: rotate(90deg) translate(50%, -44%);
+  transform-origin: center;
+  dominant-baseline: middle;
+  text-anchor: middle;
+}
+
+.att-stats {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.att-ratio {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: #cbd5e1;
+  margin: 0 0 8px 0;
+}
+
+.text-red {
+  color: #ef4444;
+}
+
+.att-last-attended {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #64748b;
+  margin: 0 0 8px 0;
+}
+
+.att-classes-needed {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #f59e0b;
+  background-color: rgba(245, 158, 11, 0.1);
+  padding: 8px;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.att-trend {
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  margin-top: auto;
+}
+
+.trend-improving {
+  color: #22c55e;
+}
+
+.trend-declining {
+  color: #ef4444;
+}

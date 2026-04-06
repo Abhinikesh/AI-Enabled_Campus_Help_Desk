@@ -54,13 +54,14 @@
     <div class="login-content">
       <h2 id="loginTitle">Login</h2>
       <form id="loginForm">
+        <div id="loginError" style="color: #ef4444; margin-bottom: 1rem; font-size: 0.875rem; text-align: center; display: none;"></div>
         <div class="form-group">
           <label id="idLabel" for="userId">Roll Number</label>
           <input type="text" id="userId" name="userId" placeholder="Enter your roll number" required>
         </div>
-        <div class="form-group">
-          <label id="classLabel" for="userClass">Class / Department</label>
-          <input type="text" id="userClass" name="userClass" placeholder="Enter your class/department" required>
+        <div class="form-group" id="secondaryFieldGroup">
+          <label id="secondaryLabel" for="userSecondary">Password</label>
+          <input type="password" id="userSecondary" name="userSecondary" placeholder="Enter your password" required>
         </div>
         <button type="submit" class="btn btn-primary" style="width: 100%;">
           Continue

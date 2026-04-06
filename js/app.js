@@ -1,5 +1,50 @@
 // Global app functionality - Navigation and common features
 
+// --- Inject Global Page Loader ---
+(function injectLoader() {
+  const loaderCSS = `
+    .global-loader {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: #0f172a;
+      display: flex; justify-content: center; align-items: center;
+      z-index: 99999;
+      transition: opacity 0.5s ease;
+    }
+    .global-loader.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .loader-spinner {
+      width: 50px; height: 50px;
+      border: 5px solid rgba(255,255,255,0.1);
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: loaderspin 1s linear infinite;
+    }
+    @keyframes loaderspin { 100% { transform: rotate(360deg); } }
+  `;
+  const styleSheet = document.createElement("style");
+  styleSheet.innerText = loaderCSS;
+  document.head.appendChild(styleSheet);
+
+  const loaderDiv = document.createElement('div');
+  loaderDiv.className = 'global-loader';
+  loaderDiv.innerHTML = '<div class="loader-spinner"></div>';
+  
+  // Inject instantly
+  if(document.body) {
+    document.body.appendChild(loaderDiv);
+  } else {
+    document.addEventListener('DOMContentLoaded', () => document.body.appendChild(loaderDiv));
+  }
+
+  // Fade out once fully loaded, minimum visual pop of 400ms.
+  window.addEventListener('load', () => {
+    setTimeout(() => loaderDiv.classList.add('hidden'), 400);
+  });
+})();
+// ---------------------------------
+
 // Check role and redirect if needed
 function checkRoleAndRedirect() {
   const userRole = sessionStorage.getItem('userRole');
@@ -183,6 +228,18 @@ function setupNavigation() {
 // Load role-based content
 function loadRoleBasedContent() {
   const userRole = getUserRole();
+  const userName = sessionStorage.getItem('userName') || 'User';
+  const userId = sessionStorage.getItem('userId') || 'Demo ID';
+
+  const heroH1 = document.querySelector('.hero-content h1');
+  const heroSubtitle = document.querySelector('.hero-content p');
+
+  if (heroH1 && sessionStorage.getItem('userName')) {
+    heroH1.textContent = `Welcome back, ${userName}!`;
+    if(heroSubtitle && userId) {
+      heroSubtitle.textContent = `Role: ${userRole.toUpperCase()} | ID: ${userId}. Explore your AI-Powered 24x7 Campus Assistant below.`;
+    }
+  }
 
   // Load classes for student and faculty
   if (userRole === 'student' || userRole === 'faculty') {

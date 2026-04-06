@@ -23,6 +23,17 @@ document.addEventListener('DOMContentLoaded', function() {
   if (loginForm) {
     loginForm.addEventListener('submit', handleLoginSubmit);
   }
+
+  // Demo auto-login
+  const demoModeBtn = document.getElementById('demoModeBtn');
+  if (demoModeBtn) {
+    demoModeBtn.addEventListener('click', function() {
+      sessionStorage.setItem('userRole', 'student');
+      sessionStorage.setItem('userId', '12345678');
+      sessionStorage.setItem('userName', 'Hackathon Judge');
+      redirectToHome();
+    });
+  }
 });
 
 function handleRoleSelection(role) {

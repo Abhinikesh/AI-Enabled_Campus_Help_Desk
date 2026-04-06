@@ -15,13 +15,11 @@
   </script> -->
 
   <script>
-  const role = localStorage.getItem('userRole');
-  if (!role) {
-    window.location.replace('role-select.html');
-  }
+    const role = sessionStorage.getItem('userRole');
+    if (!role) {
+      window.location.replace('role-select.html');
+    }
   </script>
-
-  
 </head>
 <body>
   <!-- Animated Star Background -->

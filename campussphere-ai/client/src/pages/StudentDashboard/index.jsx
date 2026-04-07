@@ -1,6 +1,7 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { studentService } from '../../services/student.service';
 import Navbar from '../../components/Navbar/Navbar';
 import { 
   CheckCircle, 
@@ -13,14 +14,60 @@ import {
   MessageSquare,
   Map,
   FileWarning,
-  GraduationCap
+  GraduationCap,
+  Loader2
 } from 'lucide-react';
 import ChatWidget from '../../components/ChatWidget/ChatWidget';
 import './Student.css';
 
 const StudentDashboard = () => {
-  const { user } = useAuth() || { user: { name: 'Arjun', role: 'student' } };
-  const studentName = user?.name || 'Arjun';
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [announcements, setAnnouncements] = useState([]);
+  const [complaints, setComplaints] = useState([]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchAllData = async () => {
+      try {
+        setLoading(true);
+        const [profRes, annRes, compRes] = await Promise.all([
+          studentService.getProfile(),
+          studentService.getAnnouncements(),
+          studentService.getComplaints()
+        ]);
+
+        if (profRes.success) setProfile(profRes.data);
+        if (annRes.success)  setAnnouncements(annRes.data.slice(0, 3)); // Only top 3
+        if (compRes.success) setComplaints(compRes.data);
+      } catch (err) {
+        console.error('Error fetching student data:', err);
+        setError('Failed to load dashboard data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAllData();
+  }, [user]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#0f172a] text-white">
+        <Loader2 className="animate-spin mr-2" /> Loading Campus Hub...
+      </div>
+    );
+  }
+
+  const studentName = profile?.userId?.name || user?.name || 'Student';
+  const attendanceAvg = profile?.attendance?.length 
+    ? Math.round(profile.attendance.reduce((acc, curr) => acc + curr.percentage, 0) / profile.attendance.length) 
+    : 0;
 
   return (
     <div className="dashboard-layout">
@@ -40,13 +87,12 @@ const StudentDashboard = () => {
             </div>
           </div>
           <div className="hero-image-container">
-            {/* 🖼️ REPLACE: Put image named 'student-hero.jpg' in /client/public/assets/images/ */}
             <img 
               src={`/assets/images/student-hero.jpg`} 
               alt="Student studying" 
               className="hero-image"
               onError={(e) => {
-                e.target.style.display = 'none'; // Hide if missing during dev
+                e.target.src = 'https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=2070&auto=format&fit=crop';
               }}
             />
           </div>
@@ -60,18 +106,17 @@ const StudentDashboard = () => {
               <span className="stat-label">Overall Attendance</span>
               <CheckCircle size={32} color="#22c55e" />
             </div>
-            <div className="stat-value">78%</div>
-            {/* Example condition for warning */}
-            {/* <p className="stat-warning">⚠ Below required 75%</p> */}
+            <div className="stat-value">{attendanceAvg}%</div>
+            {attendanceAvg < 75 && <p className="stat-warning mt-2 text-xs text-red-500">⚠ Below required 75%</p>}
           </div>
 
           {/* Card 2 */}
           <div className="stat-card stat-exam">
             <div className="stat-header">
-              <span className="stat-label">Next Exam — Apr 12</span>
+              <span className="stat-label">Next Event</span>
               <Calendar size={32} color="#3b82f6" />
             </div>
-            <div className="stat-value">Data Structures</div>
+            <div className="stat-value">Mid-Sem Exams</div>
           </div>
 
           {/* Card 3 */}
@@ -81,18 +126,18 @@ const StudentDashboard = () => {
               <CreditCard size={32} color="#f59e0b" />
             </div>
             <div className="stat-value-row">
-              <div className="stat-value">₹40,000</div>
-              <Link to="#" className="btn-small-link">Pay Now</Link>
+              <div className="stat-value">₹{profile?.fees?.totalDue?.toLocaleString() || '0'}</div>
+              {profile?.fees?.totalDue > 0 && <Link to="/student/fees" className="btn-small-link">Pay Now</Link>}
             </div>
           </div>
 
           {/* Card 4 */}
           <div className="stat-card stat-complaints">
             <div className="stat-header">
-              <span className="stat-label">Complaints Pending</span>
+              <span className="stat-label">My Complaints</span>
               <AlertCircle size={32} color="#ef4444" />
             </div>
-            <div className="stat-value">2</div>
+            <div className="stat-value">{complaints.filter(c => c.status !== 'resolved').length}</div>
           </div>
         </section>
 
@@ -104,85 +149,29 @@ const StudentDashboard = () => {
           </div>
           
           <div className="subject-cards-row">
-            {/* Data Structures */}
-            <div className="subject-card">
-              <div className="subject-info">
-                <h3 className="subject-name">Data Structures</h3>
-                <span className="subject-code">CS201</span>
+            {profile?.attendance?.slice(0, 5).map((subject, idx) => (
+              <div key={idx} className="subject-card">
+                <div className="subject-info">
+                  <h3 className="subject-name">{subject.subject}</h3>
+                  <span className="subject-code">{subject.code}</span>
+                </div>
+                <div className="progress-ring-container">
+                  <svg className="progress-ring" viewBox="0 0 100 100">
+                    <circle className="ring-bg" cx="50" cy="50" r="40" />
+                    <circle 
+                      className={`ring-progress ${subject.percentage < 75 ? 'red-ring' : 'green-ring'}`} 
+                      cx="50" cy="50" r="40" 
+                      strokeDasharray="251.2" 
+                      strokeDashoffset={251.2 * (1 - subject.percentage/100)} 
+                    />
+                    <text x="50" y="55" className="ring-text">{subject.percentage}%</text>
+                  </svg>
+                  <div className={`attendance-ratio ${subject.percentage < 75 ? 'warning-text' : ''}`}>
+                    Attended: {subject.attended} / Total: {subject.total}
+                  </div>
+                </div>
               </div>
-              <div className="progress-ring-container">
-                <svg className="progress-ring" viewBox="0 0 100 100">
-                  <circle className="ring-bg" cx="50" cy="50" r="40" />
-                  <circle className="ring-progress green-ring" cx="50" cy="50" r="40" strokeDasharray="251.2" strokeDashoffset={251.2 * (1 - 84/100)} />
-                  <text x="50" y="55" className="ring-text">84%</text>
-                </svg>
-                <div className="attendance-ratio">Attended: 42 / Total: 50</div>
-              </div>
-            </div>
-
-            {/* Database Management */}
-            <div className="subject-card">
-              <div className="subject-info">
-                <h3 className="subject-name">Database Management</h3>
-                <span className="subject-code">CS203</span>
-              </div>
-              <div className="progress-ring-container">
-                <svg className="progress-ring" viewBox="0 0 100 100">
-                  <circle className="ring-bg" cx="50" cy="50" r="40" />
-                  <circle className="ring-progress green-ring" cx="50" cy="50" r="40" strokeDasharray="251.2" strokeDashoffset={251.2 * (1 - 76/100)} />
-                  <text x="50" y="55" className="ring-text">76%</text>
-                </svg>
-                <div className="attendance-ratio">Attended: 38 / Total: 50</div>
-              </div>
-            </div>
-
-            {/* Web Development */}
-            <div className="subject-card">
-              <div className="subject-info">
-                <h3 className="subject-name">Web Development</h3>
-                <span className="subject-code">CS205</span>
-              </div>
-              <div className="progress-ring-container">
-                <svg className="progress-ring" viewBox="0 0 100 100">
-                  <circle className="ring-bg" cx="50" cy="50" r="40" />
-                  <circle className="ring-progress green-ring" cx="50" cy="50" r="40" strokeDasharray="251.2" strokeDashoffset={251.2 * (1 - 90/100)} />
-                  <text x="50" y="55" className="ring-text">90%</text>
-                </svg>
-                <div className="attendance-ratio">Attended: 45 / Total: 50</div>
-              </div>
-            </div>
-
-            {/* Computer Networks */}
-            <div className="subject-card">
-              <div className="subject-info">
-                <h3 className="subject-name">Computer Networks</h3>
-                <span className="subject-code">CS207</span>
-              </div>
-              <div className="progress-ring-container">
-                <svg className="progress-ring" viewBox="0 0 100 100">
-                  <circle className="ring-bg" cx="50" cy="50" r="40" />
-                  <circle className="ring-progress red-ring" cx="50" cy="50" r="40" strokeDasharray="251.2" strokeDashoffset={251.2 * (1 - 56/100)} />
-                  <text x="50" y="55" className="ring-text">56%</text>
-                </svg>
-                <div className="attendance-ratio warning-text">Attended: 28 / Total: 50</div>
-              </div>
-            </div>
-
-            {/* Operating Systems */}
-            <div className="subject-card">
-              <div className="subject-info">
-                <h3 className="subject-name">Operating Systems</h3>
-                <span className="subject-code">CS209</span>
-              </div>
-              <div className="progress-ring-container">
-                <svg className="progress-ring" viewBox="0 0 100 100">
-                  <circle className="ring-bg" cx="50" cy="50" r="40" />
-                  <circle className="ring-progress green-ring" cx="50" cy="50" r="40" strokeDasharray="251.2" strokeDashoffset={251.2 * (1 - 80/100)} />
-                  <text x="50" y="55" className="ring-text">80%</text>
-                </svg>
-                <div className="attendance-ratio">Attended: 40 / Total: 50</div>
-              </div>
-            </div>
+            ))}
           </div>
         </section>
 
@@ -207,46 +196,22 @@ const StudentDashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>Data Structures</td>
-                    <td>CS201</td>
-                    <td className="fw-bold">88</td>
-                    <td>100</td>
-                    <td><span className="grade-pill grade-aplus">A+</span></td>
-                    <td>Pass</td>
-                  </tr>
-                  <tr>
-                    <td>Database Mgmt</td>
-                    <td>CS203</td>
-                    <td className="fw-bold">74</td>
-                    <td>100</td>
-                    <td><span className="grade-pill grade-b">B</span></td>
-                    <td>Pass</td>
-                  </tr>
-                  <tr>
-                    <td>Web Development</td>
-                    <td>CS205</td>
-                    <td className="fw-bold">91</td>
-                    <td>100</td>
-                    <td><span className="grade-pill grade-aplus">A+</span></td>
-                    <td>Pass</td>
-                  </tr>
-                  <tr>
-                    <td>Computer Networks</td>
-                    <td>CS207</td>
-                    <td className="fw-bold">52</td>
-                    <td>100</td>
-                    <td><span className="grade-pill grade-c">C</span></td>
-                    <td>Pass</td>
-                  </tr>
-                  <tr>
-                    <td>Operating Systems</td>
-                    <td>CS209</td>
-                    <td className="fw-bold">79</td>
-                    <td>100</td>
-                    <td><span className="grade-pill grade-a">A</span></td>
-                    <td>Pass</td>
-                  </tr>
+                  {profile?.results?.length > 0 ? (
+                    profile.results.slice(0, 5).map((res, idx) => (
+                      <tr key={idx}>
+                        <td>{res.subject}</td>
+                        <td>{res.code}</td>
+                        <td className="fw-bold">{res.marks}</td>
+                        <td>{res.maxMarks}</td>
+                        <td><span className={`grade-pill grade-${res.grade.toLowerCase().replace('+', 'plus')}`}>{res.grade}</span></td>
+                        <td>{res.status}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>No recent results found.</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -260,35 +225,22 @@ const StudentDashboard = () => {
             <div className="panel-card">
               <h2>📢 Announcements</h2>
               <div className="announcement-list">
-                
-                <div className="announcement-item">
-                  <div className="announcement-top">
-                    <h3 className="announcement-title">Mid-Semester Exams Begin</h3>
-                    <span className="announcement-date">Apr 12, 2026</span>
-                  </div>
-                  <p className="announcement-body">Exams start from April 12. Check timetable on portal.</p>
-                </div>
-
-                <div className="divider"></div>
-
-                <div className="announcement-item">
-                  <div className="announcement-top">
-                    <h3 className="announcement-title">Fee Payment Reminder</h3>
-                    <span className="announcement-date">Apr 5, 2026</span>
-                  </div>
-                  <p className="announcement-body">Last date for fee payment is April 20, 2026.</p>
-                </div>
-
-                <div className="divider"></div>
-
-                <div className="announcement-item">
-                  <div className="announcement-top">
-                    <h3 className="announcement-title">Hackathon 2026 Registration</h3>
-                    <span className="announcement-date">Apr 1, 2026</span>
-                  </div>
-                  <p className="announcement-body">Register now for the annual campus hackathon.</p>
-                </div>
-
+                {announcements.length > 0 ? (
+                  announcements.map((ann, idx) => (
+                    <React.Fragment key={ann._id}>
+                      <div className="announcement-item">
+                        <div className="announcement-top">
+                          <h3 className="announcement-title">{ann.title}</h3>
+                          <span className="announcement-date">{new Date(ann.date).toLocaleDateString()}</span>
+                        </div>
+                        <p className="announcement-body">{ann.body}</p>
+                      </div>
+                      {idx < announcements.length - 1 && <div className="divider"></div>}
+                    </React.Fragment>
+                  ))
+                ) : (
+                  <p className="p-4 text-slate-400 text-sm">No recent announcements.</p>
+                )}
               </div>
             </div>
           </div>

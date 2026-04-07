@@ -12,6 +12,8 @@ const connectDB = require('./config/db');
 const User      = require('./models/User');
 const Student   = require('./models/Student');
 const Faculty   = require('./models/Faculty');
+const Parent    = require('./models/Parent');
+const Complaint = require('./models/Complaint');
 
 const SALT_ROUNDS = 10;
 
@@ -44,35 +46,39 @@ const seedUsers = [
 ];
 
 const studentAttendance = [
-  { subject: 'Data Structures',     code: 'CS201', attended: 42, total: 50 },   // 84%
-  { subject: 'Database Systems',    code: 'CS202', attended: 38, total: 50 },   // 76%
-  { subject: 'Web Development',     code: 'CS203', attended: 45, total: 50 },   // 90%
-  { subject: 'Computer Networks',   code: 'CS204', attended: 28, total: 50 },   // 56%
-  { subject: 'Operating Systems',   code: 'CS205', attended: 40, total: 50 },   // 80%
+  { subject: 'Data Structures', code: 'CS201', attended: 42, total: 50 },
+  { subject: 'Database Management', code: 'CS203', attended: 38, total: 50 },
+  { subject: 'Web Development', code: 'CS205', attended: 45, total: 50 },
+  { subject: 'Computer Networks', code: 'CS207', attended: 28, total: 50 },
+  { subject: 'Operating Systems', code: 'CS209', attended: 40, total: 50 }
 ];
 
 const studentResults = [
-  { subject: 'Data Structures',   code: 'CS201', marks: 82, maxMarks: 100, grade: 'A' },
-  { subject: 'Database Systems',  code: 'CS202', marks: 74, maxMarks: 100, grade: 'B+' },
-  { subject: 'Web Development',   code: 'CS203', marks: 91, maxMarks: 100, grade: 'A+' },
-  { subject: 'Computer Networks', code: 'CS204', marks: 55, maxMarks: 100, grade: 'C' },
-  { subject: 'Operating Systems', code: 'CS205', marks: 78, maxMarks: 100, grade: 'B+' },
+  { subject: 'Data Structures', code: 'CS201', marks: 88, maxMarks: 100, grade: 'A+' },
+  { subject: 'Database Management', code: 'CS203', marks: 74, maxMarks: 100, grade: 'B' },
+  { subject: 'Web Development', code: 'CS205', marks: 91, maxMarks: 100, grade: 'A+' },
+  { subject: 'Computer Networks', code: 'CS207', marks: 52, maxMarks: 100, grade: 'C' },
+  { subject: 'Operating Systems', code: 'CS209', marks: 79, maxMarks: 100, grade: 'A' }
+];
+
+const studentExams = [
+  { subject: 'Theoretical CS', code: 'CS401', date: 'Apr 12, 2026', time: '10:00 AM', venue: 'Exam Hall A' },
+  { subject: 'Cloud Computing', code: 'CS403', date: 'Apr 15, 2026', time: '02:00 PM', venue: 'Exam Hall B' },
+  { subject: 'Cyber Security', code: 'CS405', date: 'Apr 18, 2026', time: '10:00 AM', venue: 'Exam Hall A' }
 ];
 
 const seed = async () => {
   try {
     await connectDB();
 
-    // ── Wipe existing data for clean seed ──────────────────────
-    console.log('🗑️  Clearing existing seed data...');
-    const emails = seedUsers.map((u) => u.email);
-    const existingUsers = await User.find({ email: { $in: emails } });
-    const existingUserIds = existingUsers.map((u) => u._id);
-
-    await User.deleteMany({ email: { $in: emails } });
-    await Student.deleteMany({ userId: { $in: existingUserIds } });
-    await Faculty.deleteMany({ userId: { $in: existingUserIds } });
-    console.log('✅ Old seed data cleared');
+    // ── Wipe existing data ────────────────────────────────────
+    console.log('🗑️  Clearing existing data...');
+    await User.deleteMany({});
+    await Student.deleteMany({});
+    await Faculty.deleteMany({});
+    await Parent.deleteMany({});
+    await Complaint.deleteMany({});
+    console.log('✅ Collections cleared');
 
     // ── Hash passwords and create users ───────────────────────
     console.log('👤 Creating users...');
@@ -101,55 +107,66 @@ const seed = async () => {
       year:       2,
       attendance: studentAttendance,
       results:    studentResults,
+      exams:      studentExams,
       fees: {
-        total:    120000,
-        paid:     80000,
-        due:      40000,
-        lastPaid: new Date('2026-01-15'),
+        total: 120000,
+        paid: 80000,
+        due: 40000,
+        lastPaid: new Date('2026-02-15'),
+        dueDate: new Date('2026-04-20')
       },
       announcements: [
         {
-          title: 'Mid-Semester Exams Schedule Released',
-          body:  'Mid-semester exams will be held from April 20–30. Check the exam portal for details.',
-          date:  new Date('2026-04-01'),
+          title: 'Mid-Semester Exams Begin',
+          body: 'Exams start from April 12, 2026. Check the exam timetable on the portal.',
+          date: new Date('2026-04-01')
         },
         {
-          title: 'Campus Placement Drive — TCS',
-          body:  'TCS will be visiting campus on April 25. Register by April 18 via the placement portal.',
-          date:  new Date('2026-03-28'),
-        },
+          title: 'Fee Payment Reminder',
+          body: 'Last date for semester fee payment is April 20, 2026. Late fee of ₹500 per day will be charged after deadline.',
+          date: new Date('2026-04-05')
+        }
       ],
     });
-    console.log('  ✅ Student profile created for Arjun Sharma (20240001)');
+    console.log('  ✅ Student profile created for Arjun Sharma');
+
+    // ── Create Parent record for Ramesh Sharma ────────────────
+    console.log('👨‍👩‍👧 Creating parent record...');
+    await Parent.create({
+      userId: createdUsers['parent']._id,
+      studentRollNumber: '20240001',
+      relation: 'Father'
+    });
+    console.log('  ✅ Parent record created for Ramesh Sharma');
 
     // ── Create Faculty profile for Dr. Priya Mehta ────────────
     console.log('🏫 Creating faculty profile...');
     await Faculty.create({
       userId:     createdUsers['faculty']._id,
-      department: 'Computer Science & Engineering',
-      employeeId: 'FAC-2024-001',
-      subjects:   ['Data Structures', 'Algorithm Design', 'Web Development'],
+      department: 'Computer Science',
+      employeeId: 'FAC001',
+      subjects: ['Data Structures', 'Algorithm Design', 'Database Management'],
       timetable: [
-        { day: 'Monday',    time: '9:00 AM - 10:00 AM',  subject: 'Data Structures', room: 'CS-101' },
-        { day: 'Monday',    time: '11:00 AM - 12:00 PM', subject: 'Web Development', room: 'CS-Lab-2' },
+        { day: 'Monday',    time: '09:00 AM - 10:00 AM', subject: 'Data Structures', room: 'CS-101' },
         { day: 'Tuesday',   time: '10:00 AM - 11:00 AM', subject: 'Data Structures', room: 'CS-101' },
-        { day: 'Wednesday', time: '9:00 AM - 10:00 AM',  subject: 'Algorithm Design', room: 'CS-102' },
-        { day: 'Thursday',  time: '11:00 AM - 12:00 PM', subject: 'Web Development', room: 'CS-Lab-2' },
-        { day: 'Friday',    time: '10:00 AM - 11:00 AM', subject: 'Algorithm Design', room: 'CS-102' },
+        { day: 'Wednesday', time: '09:00 AM - 10:00 AM', subject: 'Algorithm Design', room: 'CS-102' },
       ],
     });
-    console.log('  ✅ Faculty profile created for Dr. Priya Mehta');
+    console.log('  ✅ Faculty record created');
 
-    // ── Summary ───────────────────────────────────────────────
+    console.log('📝 Creating complaints...');
+    await Complaint.insertMany([
+      { title: 'Result not updated', raisedBy: createdUsers['student']._id, role: 'student', category: 'academic', status: 'pending', description: 'Data Structures mid-sem result not visible.', createdAt: new Date('2026-04-01') },
+      { title: 'ID card issue', raisedBy: createdUsers['student']._id, role: 'student', category: 'admin', status: 'in-progress', description: 'Applied for ID card 3 weeks ago.', createdAt: new Date('2026-03-28') },
+      { title: 'Water heater broken', raisedBy: createdUsers['student']._id, role: 'student', category: 'hostel', status: 'resolved', description: 'Hostel No. 2 Room 204 heater repaired.', createdAt: new Date('2026-03-25'), resolvedAt: new Date('2026-03-28') }
+    ]);
+    console.log('  ✅ Complaints created');
+
     console.log('\n🎉 Seeding complete! Demo credentials:');
-    console.log('┌─────────────────┬──────────────────────────┬─────────────┐');
-    console.log('│ Role            │ Email                    │ Password    │');
-    console.log('├─────────────────┼──────────────────────────┼─────────────┤');
-    console.log('│ Student         │ student@campus.edu       │ student123  │');
-    console.log('│ Faculty         │ faculty@campus.edu       │ faculty123  │');
-    console.log('│ Admin           │ admin@campus.edu         │ admin1234   │');
-    console.log('│ Parent          │ parent@campus.edu        │ parent123   │');
-    console.log('└─────────────────┴──────────────────────────┴─────────────┘');
+    console.log('Student: student@campus.edu / student123');
+    console.log('Faculty: faculty@campus.edu / faculty123');
+    console.log('Admin:   admin@campus.edu   / admin1234');
+    console.log('Parent:  parent@campus.edu  / parent123');
 
     process.exit(0);
   } catch (error) {

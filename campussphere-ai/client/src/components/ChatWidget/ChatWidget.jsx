@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { aiService } from '../../services/ai.service';
 import { useAuth } from '../../context/AuthContext';
 import { X, Send } from 'lucide-react';
 import './ChatWidget.css';
@@ -51,17 +51,17 @@ const ChatWidget = () => {
     try {
       // Just keep last 5 for mini widget
       const history = messages.slice(-5);
-      const res = await axios.post('http://localhost:5000/api/ai/chat', {
+      const res = await aiService.chat({
         message: text,
         history,
         agent: null // auto-detect
-      }, { withCredentials: true });
+      });
 
       setMessages(prev => [...prev, { 
         id: Date.now() + 1, 
         role: 'ai', 
-        content: res.data.reply || "Sorry, an error occurred.", 
-        agent: res.data.agent || 'academic' 
+        content: res?.reply || "Sorry, an error occurred.", 
+        agent: res?.agent || 'academic' 
       }]);
     } catch (error) {
       setMessages(prev => [...prev, { id: Date.now() + 1, role: 'ai', content: "Connection error.", agent: 'academic' }]);

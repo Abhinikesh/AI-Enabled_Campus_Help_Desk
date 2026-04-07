@@ -15,6 +15,15 @@ const resultSchema = new mongoose.Schema({
   grade:    { type: String, default: 'N/A' },
 });
 
+const examSchema = new mongoose.Schema({
+  subject: { type: String, required: true },
+  code:    { type: String, required: true },
+  date:    { type: String, required: true }, // e.g. "Apr 12, 2026"
+  time:    { type: String, required: true }, // e.g. "10:00 AM"
+  room:    { type: String, required: false },
+  type:    { type: String, enum: ['mid-sem', 'final', 'lab-test'], default: 'final' },
+});
+
 const announcementSchema = new mongoose.Schema({
   title: { type: String, required: true },
   body:  { type: String, required: true },
@@ -40,6 +49,7 @@ const studentSchema = new mongoose.Schema({
 
   attendance:    [attendanceSchema],
   results:       [resultSchema],
+  exams:         [examSchema],
   announcements: [announcementSchema],
 
   fees: {

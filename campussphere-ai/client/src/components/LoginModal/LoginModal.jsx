@@ -15,7 +15,7 @@ const ROLE_META = {
 };
 
 const LoginModal = ({ role, onClose }) => {
-  const { login } = useAuth();
+  const { login, admissionLogin } = useAuth();
   const navigate  = useNavigate();
 
   const [closing,  setClosing]  = useState(false);
@@ -43,7 +43,10 @@ const LoginModal = ({ role, onClose }) => {
     let ok = true;
     setIdError(''); setPwError('');
 
-    if (!isAdmission) {
+    if (isAdmission) {
+      if (admName.length < 2) ok = false;
+      if (!/^\d{10}$/.test(admPhone)) ok = false;
+    } else {
       if (role === 'student') {
         if (!/^\d{8}$/.test(identifier)) {
           setIdError('Roll number must be exactly 8 digits'); ok = false;
@@ -76,20 +79,22 @@ const LoginModal = ({ role, onClose }) => {
     e.preventDefault();
     setApiError('');
 
-    // Admission: simple redirect without auth
-    if (isAdmission) {
-      navigate('/admission/dashboard');
-      handleClose();
+    if (!validate()) {
+      if (isAdmission) setApiError('Please provide a valid name and 10-digit phone number');
       return;
     }
 
-    if (!validate()) return;
-
     setLoading(true);
     try {
-      const data = await login(identifier, password, role);
-      handleClose();
-      navigate(data.redirectTo);
+      if (isAdmission) {
+        const data = await admissionLogin(admName, admPhone);
+        handleClose();
+        navigate(data.redirectTo);
+      } else {
+        const data = await login(identifier, password, role);
+        handleClose();
+        navigate(data.redirectTo);
+      }
     } catch (err) {
       setApiError(err?.response?.data?.message || err.message || 'Invalid credentials. Please try again.');
     } finally {

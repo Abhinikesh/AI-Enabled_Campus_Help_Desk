@@ -1,8 +1,8 @@
 import api from './api';
 
 export const studentService = {
-  getStats: async () => {
-    const response = await api.get('/api/student/stats');
+  getProfile: async () => {
+    const response = await api.get('/api/student/profile');
     return response.data;
   },
   getAttendance: async () => {
@@ -15,6 +15,14 @@ export const studentService = {
   },
   getResults: async () => {
     const response = await api.get('/api/student/results');
+    return response.data;
+  },
+  getFees: async () => {
+    const response = await api.get('/api/student/fees');
+    return response.data;
+  },
+  getAnnouncements: async () => {
+    const response = await api.get('/api/student/announcements');
     return response.data;
   },
   getComplaints: async () => {

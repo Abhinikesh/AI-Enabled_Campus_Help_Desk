@@ -60,7 +60,10 @@ exports.chat = async (req, res) => {
 
     res.json({ reply: responseText, agent: detectedAgent });
   } catch (error) {
-    console.error("AI Chat Error:", error);
+    console.error("AI Chat Error:", error.message || error);
+    if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY.includes('your') || error?.message?.includes('API key')) {
+       return res.json({ reply: "Add your Gemini API key to server/.env to enable AI", agent: agent || 'academic' });
+    }
     res.status(500).json({ error: "Failed to process chat message." });
   }
 };

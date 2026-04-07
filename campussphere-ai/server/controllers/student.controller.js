@@ -106,4 +106,18 @@ const getMyComplaints = async (req, res) => {
   }
 };
 
-module.exports = { getProfile, getAttendance, getResults, getFees, getAnnouncements, raiseComplaint, getMyComplaints };
+// GET /api/student/exams
+const getExams = async (req, res) => {
+  try {
+    const student = await Student.findOne({ userId: req.user.userId });
+    if (!student) return res.status(404).json({ success: false, message: 'Student not found' });
+
+    console.log(`✅ Exams fetched for userId: ${req.user.userId}`);
+    res.status(200).json({ success: true, data: student.exams });
+  } catch (err) {
+    console.error('❌ getExams error:', err.message);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+module.exports = { getProfile, getAttendance, getResults, getExams, getFees, getAnnouncements, raiseComplaint, getMyComplaints };

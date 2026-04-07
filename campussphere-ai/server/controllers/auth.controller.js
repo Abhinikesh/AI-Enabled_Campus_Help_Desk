@@ -102,44 +102,70 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const { email, password, role } = req.body;
+    const { identifier, password, role } = req.body;
 
-    if (!email || !password || !role) {
-      return res.status(400).json({ success: false, message: 'Email, password, and role are required' });
+    if (!identifier || !password || !role) {
+      return res.status(400).json({ success: false, error: 'Identifier, password, and role are required' });
     }
 
-    // ── Find user by email AND role ──
-    const user = await User.findOne({ email, role }).select('+password');
+    let user;
+
+    if (role === 'student') {
+      // Student logs in with roll number
+      const studentProfile = await Student.findOne({ 
+        rollNumber: identifier 
+      }).populate('userId');
+      
+      if (!studentProfile || !studentProfile.userId) {
+        return res.status(401).json({ 
+          success: false, 
+          error: 'Invalid roll number or password' 
+        });
+      }
+      user = studentProfile.userId;
+    } else {
+      // All other roles login with email
+      user = await User.findOne({ email: identifier, role });
+    }
+
     if (!user) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials or role mismatch' });
+      return res.status(401).json({ 
+        success: false, 
+        error: 'Invalid credentials' 
+      });
     }
 
-    if (!user.isActive) {
-      return res.status(403).json({ success: false, message: 'Your account has been deactivated' });
-    }
-
-    // ── Password comparison ──
-    // Re-fetch with password since toJSON strips it
-    const rawUser = await User.findOne({ email, role }).select('+password').lean();
-    const isMatch = await bcrypt.compare(password, rawUser.password);
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials' });
+      return res.status(401).json({ 
+        success: false, 
+        error: 'Invalid credentials' 
+      });
     }
 
-    // ── Generate and set JWT cookie ──
-    const token = generateToken(rawUser);
-    setCookieToken(res, token);
-    console.log(`✅ User logged in: ${email} [${role}]`);
+    // Check if user is active
+    if (user.isActive === false) {
+      return res.status(403).json({ success: false, error: 'Your account has been deactivated' });
+    }
 
-    return res.status(200).json({
+    const token = generateToken(user);
+    setCookieToken(res, token);
+    
+    console.log(`✅ User logged in: ${identifier} [${role}]`);
+
+    res.json({
       success: true,
-      role: rawUser.role,
-      name: rawUser.name,
-      redirectTo: ROLE_REDIRECTS[rawUser.role],
+      role: user.role,
+      name: user.name,
+      redirectTo: ROLE_REDIRECTS[user.role]
     });
+
   } catch (error) {
     console.error('❌ Login error:', error.message);
-    return res.status(500).json({ success: false, message: 'Server error during login' });
+    res.status(500).json({ 
+      success: false, 
+      error: 'Server error' 
+    });
   }
 };
 
@@ -186,4 +212,38 @@ const getMe = async (req, res) => {
   }
 };
 
-module.exports = { register, login, logout, getMe };
+// ── ADMISSION LOGIN (GUEST) ────────────────────────────────────────────────
+// Allows new admission users to get a session to use the AI Help Desk
+const admissionLogin = async (req, res) => {
+  try {
+    const { name, phone } = req.body;
+
+    if (!name || !phone) {
+      return res.status(400).json({ success: false, message: 'Name and phone are required for admission portal' });
+    }
+
+    // We don't save these to the User model, just give them a session 'admission' role
+    // Create a dummy ID for the session
+    const dummyId = `adm_${Date.now()}`;
+    const token = jwt.sign(
+      { userId: dummyId, role: 'admission', name: name },
+      process.env.JWT_SECRET,
+      { expiresIn: '2h' } // Short lived session
+    );
+
+    setCookieToken(res, token);
+    console.log(`✅ Admission guest logged in: ${name}`);
+
+    return res.status(200).json({
+      success: true,
+      role: 'admission',
+      name: name,
+      redirectTo: ROLE_REDIRECTS.admission,
+    });
+  } catch (error) {
+    console.error('❌ Admission login error:', error.message);
+    return res.status(500).json({ success: false, message: 'Server error during admission login' });
+  }
+};
+
+module.exports = { register, login, logout, getMe, admissionLogin };

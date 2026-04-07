@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import { aiService } from '../../services/ai.service';
 import Navbar from '../../components/Navbar/Navbar';
 import { useAuth } from '../../context/AuthContext';
 import { Send, Trash2, Globe } from 'lucide-react';
@@ -73,19 +73,17 @@ const AIHelpDesk = () => {
         agent: autoDetect ? null : currentAgent
       };
 
-      const res = await axios.post('http://localhost:5000/api/ai/chat', payload, {
-        withCredentials: true
-      });
+      const res = await aiService.chat(payload);
 
-      if (res.data?.agent && autoDetect) {
-        setCurrentAgent(res.data.agent);
+      if (res?.agent && autoDetect) {
+        setCurrentAgent(res.agent);
       }
 
       setMessages(prev => [...prev, {
         id: Date.now() + 1,
         role: 'ai',
-        content: res.data.reply || "Sorry, I couldn't connect. Please try again.",
-        agent: res.data.agent || currentAgent,
+        content: res?.reply || "Sorry, I couldn't connect. Please try again.",
+        agent: res?.agent || currentAgent,
         timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
       }]);
     } catch (error) {

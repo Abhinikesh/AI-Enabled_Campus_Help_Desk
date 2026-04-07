@@ -12,5 +12,9 @@ export const authService = {
   getMe: async () => {
     const response = await api.get('/api/auth/me');
     return response.data;
+  },
+  admissionLogin: async (data) => {
+    const response = await api.post('/api/auth/admission-login', data);
+    return response.data;
   }
 };

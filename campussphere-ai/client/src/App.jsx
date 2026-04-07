@@ -86,6 +86,10 @@ const App = () => {
             path="/faculty/complaints"
             element={<ProtectedRoute role="faculty"><Complaints /></ProtectedRoute>}
           />
+          <Route
+            path="/faculty/drive"
+            element={<ProtectedRoute role="faculty"><Drive /></ProtectedRoute>}
+          />
 
           {/* ── Parent ── */}
           <Route
@@ -106,11 +110,23 @@ const App = () => {
             path="/admission/dashboard"
             element={<ProtectedRoute role="admission"><AdmissionDashboard /></ProtectedRoute>}
           />
+          <Route
+            path="/admission/ai-help"
+            element={<ProtectedRoute role="admission"><AIHelpDesk /></ProtectedRoute>}
+          />
+          <Route
+            path="/admission/virtual-tour"
+            element={<ProtectedRoute role="admission"><VirtualTour /></ProtectedRoute>}
+          />
 
           {/* ── Admin ── */}
           <Route
             path="/admin/dashboard"
             element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>}
+          />
+          <Route
+            path="/admin/complaints"
+            element={<ProtectedRoute role="admin"><Complaints /></ProtectedRoute>}
           />
 
           {/* ── Catch-all ── */}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Navbar from '../../components/Navbar/Navbar';
 import { useAuth } from '../../context/AuthContext';
 import { BookOpen, Users, ClipboardList, Megaphone, Trash2 } from 'lucide-react';
+import ChatWidget from '../../components/ChatWidget/ChatWidget';
 import './Faculty.css';
 
 const FacultyDashboard = () => {
@@ -263,6 +264,7 @@ const FacultyDashboard = () => {
           </div>
         </section>
       </main>
+      <ChatWidget />
     </div>
   );
 };

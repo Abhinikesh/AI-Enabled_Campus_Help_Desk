@@ -2,6 +2,7 @@ import React from 'react';
 import Navbar from '../../components/Navbar/Navbar';
 import { useAuth } from '../../context/AuthContext';
 import { AlertTriangle, CheckCircle, CreditCard, Calendar, Phone, Mail } from 'lucide-react';
+import ChatWidget from '../../components/ChatWidget/ChatWidget';
 import './Parent.css';
 
 const ParentDashboard = () => {
@@ -198,6 +199,7 @@ const ParentDashboard = () => {
         </section>
 
       </main>
+      <ChatWidget />
     </div>
   );
 };

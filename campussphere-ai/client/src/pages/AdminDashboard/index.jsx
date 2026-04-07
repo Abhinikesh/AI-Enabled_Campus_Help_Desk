@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar/Navbar';
-import { Users, UserCheck, AlertTriangle, CheckCircle, Megaphone, Activity } from 'lucide-react';
+import { Users, UserPlus, ClipboardList, CheckCircle, Megaphone, Activity, Search, Edit2, Trash2 } from 'lucide-react';
+import ChatWidget from '../../components/ChatWidget/ChatWidget';
 import './Admin.css';
 
 const AdminDashboard = () => {
@@ -252,6 +253,7 @@ const AdminDashboard = () => {
           </div>
         </section>
       </main>
+      <ChatWidget />
     </div>
   );
 };

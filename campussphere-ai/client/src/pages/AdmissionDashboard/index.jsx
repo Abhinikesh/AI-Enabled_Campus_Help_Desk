@@ -1,6 +1,7 @@
 import React from 'react';
 import Navbar from '../../components/Navbar/Navbar';
 import { Award, Briefcase, Users, FileText, CheckCircle, Clock } from 'lucide-react';
+import ChatWidget from '../../components/ChatWidget/ChatWidget';
 import './Admission.css';
 
 const AdmissionDashboard = () => {
@@ -187,6 +188,7 @@ const AdmissionDashboard = () => {
         </section>
 
       </main>
+      <ChatWidget />
     </div>
   );
 };

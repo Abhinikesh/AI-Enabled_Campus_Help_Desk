@@ -1,0 +1,120 @@
+.drive-layout {
+  min-height: 100vh;
+  background-color: #0f172a;
+  padding-top: 64px;
+}
+
+.drive-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Helpers */
+.btn { display: inline-flex; align-items: center; justify-content: center; padding: 8px 16px; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; }
+.btn-outline { background-color: transparent; border: 1px solid #334155; color: white; gap: 8px; }
+.btn-outline:hover { background-color: rgba(255,255,255,0.05); }
+
+/* HEADER */
+.drive-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+@media (max-width: 640px) {
+  .drive-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+}
+
+.dh-title { font-family: 'Poppins', sans-serif; font-size: 28px; font-weight: 700; color: white; margin: 0 0 4px 0; }
+.dh-subtitle { font-family: 'Inter', sans-serif; font-size: 14px; color: #94a3b8; margin: 0; }
+
+.search-box {
+  display: flex; align-items: center; gap: 10px; background-color: #1e293b;
+  border: 1px solid #334155; border-radius: 8px; padding: 10px 16px; width: 300px;
+  transition: border-color 0.2s;
+}
+.search-box:focus-within { border-color: #3b82f6; box-shadow: 0 0 8px rgba(59,130,246,0.3); }
+.search-box input {
+  background: none; border: none; color: white; outline: none; flex-grow: 1;
+  font-family: 'Inter', sans-serif; font-size: 14px;
+}
+@media (max-width: 640px) { .search-box { width: 100%; } }
+
+/* TABS */
+.drive-tabs {
+  display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; border-bottom: 1px solid #334155;
+}
+.drive-tabs::-webkit-scrollbar { height: 4px; }
+.drive-tabs::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+
+.drive-tab {
+  background: none; border: none; color: #94a3b8; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500;
+  padding: 8px 16px; cursor: pointer; transition: 0.2s; border-radius: 8px; white-space: nowrap;
+}
+.drive-tab:hover { background-color: rgba(255,255,255,0.05); color: white; }
+.drive-tab.active { background-color: rgba(59,130,246,0.15); color: #3b82f6; font-weight: 600; }
+
+/* STORAGE INFO */
+.drive-storage-bar {
+  background-color: #1e293b; padding: 16px 24px; border-radius: 12px;
+  display: flex; justify-content: space-between; align-items: center; border: 1px solid #334155;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.ds-left { display: flex; align-items: center; gap: 16px; flex-grow: 1; margin-right: 24px;}
+.ds-text { font-family: 'Inter', sans-serif; font-size: 13px; color: #94a3b8; white-space: nowrap; min-width: 120px;}
+.ds-progress-bg { height: 6px; background-color: #0f172a; border-radius: 3px; flex-grow: 1; max-width: 300px; overflow: hidden; }
+.ds-progress-fill { height: 100%; background-color: #3b82f6; border-radius: 3px; }
+@media (max-width: 640px) { .drive-storage-bar { flex-direction: column; gap: 16px; align-items: stretch; } .ds-left { margin-right: 0;} .ds-progress-bg { max-width: 100%;} }
+
+/* GRID */
+.drive-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+@media (max-width: 1024px) { .drive-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .drive-grid { grid-template-columns: 1fr; } }
+
+.file-card {
+  background-color: #1e293b; border-radius: 12px; padding: 20px; border: 1px solid #334155;
+  display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; position: relative; overflow: hidden;
+}
+.file-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.15);}
+
+.file-top-icon { margin-bottom: 16px; display: flex; align-items: center; justify-content: center; width: 64px; height: 64px; background-color: rgba(255,255,255,0.03); border-radius: 12px; }
+
+.file-info { flex-grow: 1; display: flex; flex-direction: column; }
+.file-name { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; color: white; margin: 0 0 6px 0; display: -webkit-box; -webkit-line-clamp: 1; line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.file-sub { font-family: 'Inter', sans-serif; font-size: 13px; color: #94a3b8; margin: 0 0 16px 0; }
+.file-meta { display: flex; gap: 8px; font-family: 'Inter', sans-serif; font-size: 11px; color: #64748b; margin-top: auto; margin-bottom: 16px;}
+
+.file-actions { display: flex; gap: 8px; border-top: 1px solid #334155; padding-top: 16px; }
+.f-btn { background: none; border: none; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; padding: 8px;}
+.f-btn-dl { background-color: rgba(59,130,246,0.1); color: #3b82f6; flex-grow: 1; gap: 8px; }
+.f-btn-dl:hover:not(:disabled) { background-color: #3b82f6; color: white; }
+.f-btn-dl:disabled { opacity: 0.6; cursor: wait; }
+
+.f-btn-share { background-color: rgba(255,255,255,0.05); color: #cbd5e1; }
+.f-btn-share:hover { background-color: rgba(255,255,255,0.1); color: white; }
+
+.dl-success { display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: #34d399; flex-grow: 1; padding: 8px; animation: fade-in 0.3s; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* Download progress bar overlay inside card */
+.file-dl-progress {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background-color: transparent;
+}
+.dl-fill.animated {
+  height: 100%; background-color: #3b82f6; width: 0;
+  animation: dl-anim 1.5s linear forwards;
+}
+@keyframes dl-anim { 0% { width: 0; } 50% { width: 70%; } 100% { width: 100%; } }
+
+.drive-empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 64px 20px; gap: 16px; text-align: center;
+}
+.empty-text { font-family: 'Inter', sans-serif; font-size: 15px; color: #94a3b8; }

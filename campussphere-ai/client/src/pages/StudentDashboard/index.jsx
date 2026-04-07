@@ -15,6 +15,7 @@ import {
   FileWarning,
   GraduationCap
 } from 'lucide-react';
+import ChatWidget from '../../components/ChatWidget/ChatWidget';
 import './Student.css';
 
 const StudentDashboard = () => {
@@ -327,6 +328,7 @@ const StudentDashboard = () => {
         </section>
 
       </main>
+      <ChatWidget />
     </div>
   );
 };

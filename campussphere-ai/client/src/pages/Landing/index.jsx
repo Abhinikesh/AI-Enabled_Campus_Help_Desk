@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, Navigate } from 'react-router-dom';
 import {
   GraduationCap, BookOpen, Users, UserPlus, Shield,
   Bot, Map, CheckSquare, AlertTriangle, FolderOpen, LayoutDashboard,
-  Star, ArrowRight, Cpu, ChevronRight
+  ArrowRight, Cpu
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import LoginModal from '../../components/LoginModal/LoginModal';
 import './Landing.css';
 
@@ -87,12 +88,22 @@ const AnimatedNumber = ({ value, suffix, inView }) => {
 };
 
 // ── Landing Page ────────────────────────────────────────────
+const ROLE_DASHBOARDS = {
+  student:   '/student/dashboard',
+  faculty:   '/faculty/dashboard',
+  parent:    '/parent/dashboard',
+  admission: '/admission/dashboard',
+  admin:     '/admin/dashboard',
+};
+
 const Landing = () => {
   const navigate = useNavigate();
-  const [scrolled,      setScrolled]      = useState(false);
-  const [activeModal,   setActiveModal]   = useState(null); // role string | null
-  const [statsInView,   setStatsInView]   = useState(false);
-  const statsRef   = useRef(null);
+  const { user, loading } = useAuth();
+
+  const [scrolled,    setScrolled]    = useState(false);
+  const [activeModal, setActiveModal] = useState(null); // role string | null
+  const [statsInView, setStatsInView] = useState(false);
+  const statsRef = useRef(null);
 
   // Navbar scroll shadow
   useEffect(() => {
@@ -111,8 +122,14 @@ const Landing = () => {
     return () => observer.disconnect();
   }, []);
 
-  const openModal = (roleId) => setActiveModal(roleId);
-  const closeModal = () => setActiveModal(null);
+  // ── If already authenticated, redirect to their dashboard ──
+  // We wait until loading=false so we don't redirect before the JWT check completes
+  if (!loading && user) {
+    return <Navigate to={ROLE_DASHBOARDS[user.role] || '/'} replace />;
+  }
+
+  const openModal  = (roleId) => setActiveModal(roleId);
+  const closeModal = ()       => setActiveModal(null);
 
   const handleExplore = () => {
     document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });

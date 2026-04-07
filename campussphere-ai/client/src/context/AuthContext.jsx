@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }) => {
       await fetchUser();
       return data; // { success, role, name, redirectTo }
     }
-    throw new Error(data.message || 'Login failed');
+    throw new Error(data.error || data.message || 'Login failed');
   };
 
   // ── Logout ─────────────────────────────────────────────────

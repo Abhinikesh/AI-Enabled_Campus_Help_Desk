@@ -49,7 +49,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // ── Start Server ─────────────────────────────────────────────
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
   console.log(`🚀 CampusSphere server running on http://localhost:${PORT}`);
 });

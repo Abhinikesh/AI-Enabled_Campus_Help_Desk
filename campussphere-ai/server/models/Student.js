@@ -57,6 +57,7 @@ const studentSchema = new mongoose.Schema({
     paid:     { type: Number, default: 0 },
     due:      { type: Number, default: 0 },
     lastPaid: { type: Date, default: null },
+    dueDate:  { type: Date, default: null },
   },
 });
 

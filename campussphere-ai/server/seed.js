@@ -62,9 +62,9 @@ const studentResults = [
 ];
 
 const studentExams = [
-  { subject: 'Theoretical CS', code: 'CS401', date: 'Apr 12, 2026', time: '10:00 AM', venue: 'Exam Hall A' },
-  { subject: 'Cloud Computing', code: 'CS403', date: 'Apr 15, 2026', time: '02:00 PM', venue: 'Exam Hall B' },
-  { subject: 'Cyber Security', code: 'CS405', date: 'Apr 18, 2026', time: '10:00 AM', venue: 'Exam Hall A' }
+  { subject: 'Theoretical CS', code: 'CS401', date: 'Apr 12, 2026', time: '10:00 AM', room: 'Exam Hall A' },
+  { subject: 'Cloud Computing', code: 'CS403', date: 'Apr 15, 2026', time: '02:00 PM', room: 'Exam Hall B' },
+  { subject: 'Cyber Security',  code: 'CS405', date: 'Apr 18, 2026', time: '10:00 AM', room: 'Exam Hall A' },
 ];
 
 const seed = async () => {

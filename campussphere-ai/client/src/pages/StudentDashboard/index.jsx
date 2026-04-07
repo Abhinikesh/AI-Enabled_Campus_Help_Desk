@@ -43,7 +43,12 @@ const StudentDashboard = () => {
         ]);
 
         if (profRes.success) setProfile(profRes.data);
-        if (annRes.success)  setAnnouncements(annRes.data.slice(0, 3)); // Only top 3
+        // Use global announcements API; fall back to student's embedded announcements
+        if (annRes.success && annRes.data.length > 0) {
+          setAnnouncements(annRes.data.slice(0, 3));
+        } else if (profRes.success && profRes.data.announcements?.length > 0) {
+          setAnnouncements(profRes.data.announcements.slice(0, 3));
+        }
         if (compRes.success) setComplaints(compRes.data);
       } catch (err) {
         console.error('Error fetching student data:', err);
@@ -65,8 +70,13 @@ const StudentDashboard = () => {
   }
 
   const studentName = profile?.userId?.name || user?.name || 'Student';
-  const attendanceAvg = profile?.attendance?.length 
-    ? Math.round(profile.attendance.reduce((acc, curr) => acc + curr.percentage, 0) / profile.attendance.length) 
+  // Compute percentage from attended/total (model has no stored .percentage field)
+  const attendanceAvg = profile?.attendance?.length
+    ? Math.round(
+        profile.attendance.reduce((acc, curr) =>
+          acc + (curr.total > 0 ? (curr.attended / curr.total) * 100 : 0), 0
+        ) / profile.attendance.length
+      )
     : 0;
 
   return (
@@ -126,8 +136,8 @@ const StudentDashboard = () => {
               <CreditCard size={32} color="#f59e0b" />
             </div>
             <div className="stat-value-row">
-              <div className="stat-value">₹{profile?.fees?.totalDue?.toLocaleString() || '0'}</div>
-              {profile?.fees?.totalDue > 0 && <Link to="/student/fees" className="btn-small-link">Pay Now</Link>}
+              <div className="stat-value">₹{(profile?.fees?.due ?? 0).toLocaleString()}</div>
+              {profile?.fees?.due > 0 && <Link to="/student/fees" className="btn-small-link">Pay Now</Link>}
             </div>
           </div>
 
@@ -159,14 +169,14 @@ const StudentDashboard = () => {
                   <svg className="progress-ring" viewBox="0 0 100 100">
                     <circle className="ring-bg" cx="50" cy="50" r="40" />
                     <circle 
-                      className={`ring-progress ${subject.percentage < 75 ? 'red-ring' : 'green-ring'}`} 
+                      className={`ring-progress ${(subject.total > 0 ? (subject.attended/subject.total)*100 : 0) < 75 ? 'red-ring' : 'green-ring'}`} 
                       cx="50" cy="50" r="40" 
                       strokeDasharray="251.2" 
-                      strokeDashoffset={251.2 * (1 - subject.percentage/100)} 
+                      strokeDashoffset={251.2 * (1 - (subject.total > 0 ? subject.attended/subject.total : 0))} 
                     />
-                    <text x="50" y="55" className="ring-text">{subject.percentage}%</text>
+                    <text x="50" y="55" className="ring-text">{subject.total > 0 ? Math.round((subject.attended/subject.total)*100) : 0}%</text>
                   </svg>
-                  <div className={`attendance-ratio ${subject.percentage < 75 ? 'warning-text' : ''}`}>
+                  <div className={`attendance-ratio ${(subject.total > 0 ? (subject.attended/subject.total)*100 : 0) < 75 ? 'warning-text' : ''}`}>
                     Attended: {subject.attended} / Total: {subject.total}
                   </div>
                 </div>

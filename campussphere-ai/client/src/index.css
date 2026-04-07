@@ -132,3 +132,25 @@ h1, h2, h3, h4, h5, h6 {
   animation: spin 0.7s linear infinite;
   display: inline-block;
 }
+
+/* ── Page Transition ──────────────────────────────────────── */
+.page-enter {
+  animation: pageEnter 0.3s ease forwards;
+}
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Global Mobile Responsive Defaults ───────────────────── */
+@media (max-width: 768px) {
+  .hero-image { display: none; }
+  .hero-content { text-align: center; }
+  .hero-buttons { flex-direction: column; gap: 12px; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .sidebar { display: none; }
+  .mobile-agent-select { display: block; }
+  .table-wrapper { overflow-x: auto; }
+  .chat-widget { bottom: 16px; right: 16px; }
+  .modal { width: 100vw; height: 100vh; border-radius: 0; }
+}

@@ -100,9 +100,9 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        <div className="navbar-logo-section">
-          <GraduationCap className="logo-icon" size={28} />
-          <span className="logo-text">CampusSphere AI</span>
+        <div className="navbar-logo-section" onClick={() => window.location.href = '/'}>
+          <GraduationCap className="logo-icon" size={26} color="#3b82f6" />
+          <span className="logo-text">CampusSphere <span className="logo-ai">AI</span></span>
           <span className={`role-badge ${getRoleBadgeColor(role)}`}>
             {role === 'admission' ? 'NEW ADMISSION' : role.toUpperCase()}
           </span>

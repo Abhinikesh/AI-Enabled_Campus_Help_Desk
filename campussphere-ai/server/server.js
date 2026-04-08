@@ -16,6 +16,7 @@ const app = express();
 app.use(cors({
   origin: 'http://localhost:5173',
   credentials: true,               // allow cookies to be sent
+  exposedHeaders: ['Content-Disposition']
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -28,6 +29,13 @@ app.use('/api/faculty', require('./routes/faculty.routes'));
 app.use('/api/admin',   require('./routes/admin.routes'));
 app.use('/api/parent',  require('./routes/parent.routes'));
 app.use('/api/ai',      require('./routes/ai.routes'));
+app.use('/api/drive',   require('./routes/drive.routes'));
+
+// Static serving for uploads
+const path = require('path');
+app.use('/uploads', express.static(
+  path.join(__dirname, 'uploads')
+));
 
 // ── Health check ────────────────────────────────────────────
 app.get('/api/health', (req, res) => {

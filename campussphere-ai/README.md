@@ -43,3 +43,31 @@ npm run dev
 - 📁 Academic Drive
 - 🔐 Role-based Access Control
 - 📱 Fully Responsive Design
+
+
+1. Ensure Dependencies are Installed
+
+cd ~/AI-Enabled_Campus_Help_Desk/campussphere-ai/
+npm run install-all
+
+2. Seed the MongoDB Database
+
+# Still in campussphere-ai/
+npm run seed
+
+3. Run the Full Stack
+
+# Still in campussphere-ai/
+npm run dev
+
+4. ensure to check the folder name sphere-ai at laste
+cd ~/AI-Enabled_Campus_Help_Desk/campussphere-ai && npm run dev
+
+
+5. if error kill node 
+
+killall node
+
+6. final run
+
+npm run dev

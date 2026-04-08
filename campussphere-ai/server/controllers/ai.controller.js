@@ -50,11 +50,12 @@ exports.chat = async (req, res) => {
     }));
 
     const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-flash',
+      model: 'gemini-2.0-flash-lite',
       systemInstruction: systemPrompt
     });
 
-    const chatSession = model.startChat({ history: geminiHistory });
+    const filteredHistory = geminiHistory[0]?.role === "model" ? geminiHistory.slice(1) : geminiHistory;
+    const chatSession = model.startChat({ history: filteredHistory });
     const result = await chatSession.sendMessage(message);
     const responseText = result.response.text();
 

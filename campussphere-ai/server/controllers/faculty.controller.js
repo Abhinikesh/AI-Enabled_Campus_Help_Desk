@@ -1,5 +1,6 @@
 const Faculty = require('../models/Faculty');
 const Announcement = require('../models/Announcement');
+const Student = require('../models/Student');
 
 // GET /api/faculty/profile
 const getProfile = async (req, res) => {
@@ -52,4 +53,53 @@ const createAnnouncement = async (req, res) => {
   }
 };
 
-module.exports = { getProfile, getTimetable, createAnnouncement };
+// GET /api/faculty/students
+const getStudents = async (req, res) => {
+  try {
+    const students = await Student.find({}).populate('userId', 'name email');
+    res.status(200).json({ success: true, data: students });
+  } catch (err) {
+    console.error('❌ getStudents error:', err.message);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+// POST /api/faculty/attendance
+const markAttendance = async (req, res) => {
+  try {
+    const { subjectCode, attendanceData } = req.body;
+    if (!subjectCode || !attendanceData || !Array.isArray(attendanceData)) {
+      return res.status(400).json({ success: false, message: 'Invalid payload' });
+    }
+
+    let updatedCount = 0;
+    for (const record of attendanceData) {
+      if (record.status !== 'Present' && record.status !== 'Absent') continue;
+
+      const student = await Student.findById(record.studentId);
+      if (student) {
+        // Find subject in attendance array or create one. Wait, let's just find and update.
+        let subjectAtt = student.attendance.find(a => a.code === subjectCode);
+        if (!subjectAtt) {
+          student.attendance.push({ subject: record.subjectName || subjectCode, code: subjectCode, attended: 0, total: 0 });
+          subjectAtt = student.attendance[student.attendance.length - 1];
+        }
+
+        subjectAtt.total += 1;
+        if (record.status === 'Present') {
+          subjectAtt.attended += 1;
+        }
+
+        await student.save();
+        updatedCount++;
+      }
+    }
+
+    res.status(200).json({ success: true, message: `Attendance updated for ${updatedCount} students` });
+  } catch (err) {
+    console.error('❌ markAttendance error:', err.message);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+module.exports = { getProfile, getTimetable, createAnnouncement, getStudents, markAttendance };

@@ -4,7 +4,7 @@ const {
   upload, getFiles, uploadFile,
   downloadFile, shareFile, getSharedFile, deleteFile
 } = require('../controllers/drive.controller');
-const { authMiddleware } = require('../middleware/auth.middleware');
+const authMiddleware = require('../middleware/auth.middleware');
 
 // Public route - shared file download (no auth)
 router.get('/shared/:code', getSharedFile);

@@ -145,11 +145,15 @@ const seed = async () => {
       userId:     createdUsers['faculty']._id,
       department: 'Computer Science',
       employeeId: 'FAC001',
-      subjects: ['Data Structures', 'Algorithm Design', 'Database Management'],
+      subjects: [
+        { name: 'Data Structures', code: 'CS201', credits: 4, semester: 4 },
+        { name: 'Algorithm Design', code: 'CS202', credits: 4, semester: 4 },
+        { name: 'Database Management', code: 'CS203', credits: 3, semester: 4 }
+      ],
       timetable: [
-        { day: 'Monday',    time: '09:00 AM - 10:00 AM', subject: 'Data Structures', room: 'CS-101' },
-        { day: 'Tuesday',   time: '10:00 AM - 11:00 AM', subject: 'Data Structures', room: 'CS-101' },
-        { day: 'Wednesday', time: '09:00 AM - 10:00 AM', subject: 'Algorithm Design', room: 'CS-102' },
+        { day: 'Monday',    startTime: '09:00 AM', endTime: '10:00 AM', subject: 'Data Structures', code: 'CS201', room: 'CS-101', batch: 'All' },
+        { day: 'Tuesday',   startTime: '10:00 AM', endTime: '11:00 AM', subject: 'Data Structures', code: 'CS201', room: 'CS-101', batch: 'All' },
+        { day: 'Wednesday', startTime: '09:00 AM', endTime: '10:00 AM', subject: 'Algorithm Design', code: 'CS202', room: 'CS-102', batch: 'All' },
       ],
     });
     console.log('  ✅ Faculty record created');

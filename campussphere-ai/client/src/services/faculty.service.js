@@ -12,5 +12,13 @@ export const facultyService = {
   createAnnouncement: async (data) => {
     const response = await api.post('/api/faculty/announcements', data);
     return response.data;
+  },
+  getStudents: async () => {
+    const response = await api.get('/api/faculty/students');
+    return response.data;
+  },
+  markAttendance: async (data) => {
+    const response = await api.post('/api/faculty/attendance', data);
+    return response.data;
   }
 };

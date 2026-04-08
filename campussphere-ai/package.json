@@ -10,6 +10,9 @@
     "seed": "cd server && node seed.js"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "autoprefixer": "^10.4.27",
+    "concurrently": "^8.2.2",
+    "postcss": "^8.5.9",
+    "tailwindcss": "^4.2.2"
   }
 }

@@ -9,39 +9,46 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const connectDB = require('./config/db');
-const User      = require('./models/User');
-const Student   = require('./models/Student');
-const Faculty   = require('./models/Faculty');
-const Parent    = require('./models/Parent');
+const User = require('./models/User');
+const Student = require('./models/Student');
+const Faculty = require('./models/Faculty');
+const Parent = require('./models/Parent');
 const Complaint = require('./models/Complaint');
 
 const SALT_ROUNDS = 10;
 
 const seedUsers = [
   {
-    name:       'Arjun Sharma',
-    email:      'student@campus.edu',
-    password:   'student123',
-    role:       'student',
+    name: 'Arjun Sharma',
+    email: 'student@campus.edu',
+    password: 'student123',
+    role: 'student',
     rollNumber: '20240001',
   },
   {
-    name:     'Dr. Priya Mehta',
-    email:    'faculty@campus.edu',
+    name: 'Abhinikesh',
+    email: 'abhinikesh@campus.edu',
+    password: 'student123',
+    role: 'student',
+    rollNumber: '20240002',
+  },
+  {
+    name: 'Dr. Priya Mehta',
+    email: 'faculty@campus.edu',
     password: 'faculty123',
-    role:     'faculty',
+    role: 'faculty',
   },
   {
-    name:     'Admin User',
-    email:    'admin@campus.edu',
+    name: 'Admin User',
+    email: 'admin@campus.edu',
     password: 'admin1234',
-    role:     'admin',
+    role: 'admin',
   },
   {
-    name:     'Ramesh Sharma',
-    email:    'parent@campus.edu',
+    name: 'Ramesh Sharma',
+    email: 'parent@campus.edu',
     password: 'parent123',
-    role:     'parent',
+    role: 'parent',
   },
 ];
 
@@ -64,7 +71,7 @@ const studentResults = [
 const studentExams = [
   { subject: 'Theoretical CS', code: 'CS401', date: 'Apr 12, 2026', time: '10:00 AM', room: 'Exam Hall A' },
   { subject: 'Cloud Computing', code: 'CS403', date: 'Apr 15, 2026', time: '02:00 PM', room: 'Exam Hall B' },
-  { subject: 'Cyber Security',  code: 'CS405', date: 'Apr 18, 2026', time: '10:00 AM', room: 'Exam Hall A' },
+  { subject: 'Cyber Security', code: 'CS405', date: 'Apr 18, 2026', time: '10:00 AM', room: 'Exam Hall A' },
 ];
 
 const seed = async () => {
@@ -93,21 +100,21 @@ const seed = async () => {
         role:       userData.role,
         rollNumber: userData.rollNumber || null,
       });
-      createdUsers[userData.role] = user;
+      createdUsers[userData.email] = user;
       console.log(`  ✅ Created [${userData.role}]: ${userData.email}`);
     }
 
     // ── Create Student profile for Arjun Sharma ───────────────
-    console.log('📚 Creating student profile...');
+    console.log('📚 Creating student profiles...');
     await Student.create({
-      userId:     createdUsers['student']._id,
+      userId:     createdUsers['student@campus.edu']._id,
       rollNumber: '20240001',
-      branch:     'Computer Science & Engineering',
-      semester:   4,
-      year:       2,
+      branch: 'Computer Science & Engineering',
+      semester: 4,
+      year: 2,
       attendance: studentAttendance,
-      results:    studentResults,
-      exams:      studentExams,
+      results: studentResults,
+      exams: studentExams,
       fees: {
         total: 120000,
         paid: 80000,
@@ -130,10 +137,30 @@ const seed = async () => {
     });
     console.log('  ✅ Student profile created for Arjun Sharma');
 
+    await Student.create({
+      userId:     createdUsers['abhinikesh@campus.edu']._id,
+      rollNumber: '20240002',
+      branch:     'Computer Science & Engineering',
+      semester:   4,
+      year:       2,
+      attendance: studentAttendance,
+      results:    studentResults,
+      exams:      studentExams,
+      fees: {
+        total: 120000,
+        paid: 120000,
+        due: 0,
+        lastPaid: new Date('2026-01-10'),
+        dueDate: new Date('2026-04-20')
+      },
+      announcements: []
+    });
+    console.log('  ✅ Student profile created for Abhinikesh');
+
     // ── Create Parent record for Ramesh Sharma ────────────────
     console.log('👨‍👩‍👧 Creating parent record...');
     await Parent.create({
-      userId: createdUsers['parent']._id,
+      userId: createdUsers['parent@campus.edu']._id,
       studentRollNumber: '20240001',
       relation: 'Father'
     });
@@ -142,7 +169,7 @@ const seed = async () => {
     // ── Create Faculty profile for Dr. Priya Mehta ────────────
     console.log('🏫 Creating faculty profile...');
     await Faculty.create({
-      userId:     createdUsers['faculty']._id,
+      userId:     createdUsers['faculty@campus.edu']._id,
       department: 'Computer Science',
       employeeId: 'FAC001',
       subjects: [
@@ -151,8 +178,8 @@ const seed = async () => {
         { name: 'Database Management', code: 'CS203', credits: 3, semester: 4 }
       ],
       timetable: [
-        { day: 'Monday',    startTime: '09:00 AM', endTime: '10:00 AM', subject: 'Data Structures', code: 'CS201', room: 'CS-101', batch: 'All' },
-        { day: 'Tuesday',   startTime: '10:00 AM', endTime: '11:00 AM', subject: 'Data Structures', code: 'CS201', room: 'CS-101', batch: 'All' },
+        { day: 'Monday', startTime: '09:00 AM', endTime: '10:00 AM', subject: 'Data Structures', code: 'CS201', room: 'CS-101', batch: 'All' },
+        { day: 'Tuesday', startTime: '10:00 AM', endTime: '11:00 AM', subject: 'Data Structures', code: 'CS201', room: 'CS-101', batch: 'All' },
         { day: 'Wednesday', startTime: '09:00 AM', endTime: '10:00 AM', subject: 'Algorithm Design', code: 'CS202', room: 'CS-102', batch: 'All' },
       ],
     });
@@ -160,9 +187,9 @@ const seed = async () => {
 
     console.log('📝 Creating complaints...');
     await Complaint.insertMany([
-      { title: 'Result not updated', raisedBy: createdUsers['student']._id, role: 'student', category: 'academic', status: 'pending', description: 'Data Structures mid-sem result not visible.', createdAt: new Date('2026-04-01') },
-      { title: 'ID card issue', raisedBy: createdUsers['student']._id, role: 'student', category: 'admin', status: 'in-progress', description: 'Applied for ID card 3 weeks ago.', createdAt: new Date('2026-03-28') },
-      { title: 'Water heater broken', raisedBy: createdUsers['student']._id, role: 'student', category: 'hostel', status: 'resolved', description: 'Hostel No. 2 Room 204 heater repaired.', createdAt: new Date('2026-03-25'), resolvedAt: new Date('2026-03-28') }
+      { title: 'Result not updated', raisedBy: createdUsers['student@campus.edu']._id, role: 'student', category: 'academic', status: 'pending', description: 'Data Structures mid-sem result not visible.', createdAt: new Date('2026-04-01') },
+      { title: 'ID card issue', raisedBy: createdUsers['student@campus.edu']._id, role: 'student', category: 'admin', status: 'in-progress', description: 'Applied for ID card 3 weeks ago.', createdAt: new Date('2026-03-28') },
+      { title: 'Water heater broken', raisedBy: createdUsers['student@campus.edu']._id, role: 'student', category: 'hostel', status: 'resolved', description: 'Hostel No. 2 Room 204 heater repaired.', createdAt: new Date('2026-03-25'), resolvedAt: new Date('2026-03-28') }
     ]);
     console.log('  ✅ Complaints created');
 

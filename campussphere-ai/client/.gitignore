@@ -17,6 +17,7 @@ dist-ssr
 .env.development
 .env.example
 .env.test
+campussphere-ai/server/.env
 
 # Editor directories and files
 .vscode/*
